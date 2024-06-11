@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.GradientButton
 import com.app.module.base.common.InputErrorTips
 import com.app.module.base.common.LoginInput
 import com.app.module.base.common.localAccount
@@ -66,6 +67,8 @@ private fun LoginView(
     BusinessContentView<LoginViewModel>(
         needInit = needInit,
     ) { vm ->
+        //登录按钮
+        val buttonIsEnabledOb by vm.buttonIsEnabled.collectAsState(initial = false)
         //账号状态
         val accountStatusOb by vm.accountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
         //账号变化
@@ -77,8 +80,9 @@ private fun LoginView(
             } else {
                 vm.accountStatus.value = LoginInputStatus.FOCUS
             }
-
+            vm.buttonIsEnabled.value = vm.account.value.text.isNotBlank() && vm.password.value.text.isNotBlank()
         }
+
         //账号焦点变化
         val onAccountFocusChanged: (FocusState) -> Unit = { focusState ->
             vm.addIntent(
@@ -98,7 +102,7 @@ private fun LoginView(
             } else {
                 vm.passwordStatus.value = LoginInputStatus.FOCUS
             }
-
+            vm.buttonIsEnabled.value = vm.account.value.text.isNotBlank() && vm.password.value.text.isNotBlank()
         }
         //密码焦点变化
         val onPasswordFocusChanged: (FocusState) -> Unit = { focusState ->
@@ -126,8 +130,8 @@ private fun LoginView(
                     .fillMaxSize()
                     .nothing(),
             ) {
-                Spacer(modifier = Modifier.height(345.dp))
-                Column(Modifier.weight(1f)) {
+                Spacer(modifier = Modifier.weight(345f))
+                Column(Modifier.wrapContentHeight()) {
                     //Welcome
                     Text(
                         text = stringResource(id = com.res.R.string.res_welcome),
@@ -200,12 +204,20 @@ private fun LoginView(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 InputErrorTips(InputType.Password)
                             }
+                            Spacer(modifier = Modifier.height(32.dp))
+                            //登录按钮
+                            GradientButton(buttonIsEnabledOb,
+                                stringResource(id = com.res.R.string.res_sign_in)
+                            ) {
+
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
                         }
                         Spacer(modifier = Modifier.width(36.dp))
                     }
 
                 }
-                Spacer(modifier = Modifier.height(374.dp))
+                Spacer(modifier = Modifier.weight(374f))
             }
         }
     }

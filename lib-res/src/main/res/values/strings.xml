@@ -19,4 +19,5 @@
     <string name="res_password" translatable="false">Password</string>
     <string name="res_account_empty" translatable="false">The Account field is required</string>
     <string name="res_password_empty" translatable="false">The Password field is required</string>
+    <string name="res_sign_in" translatable="false">Sign in</string>
 </resources>

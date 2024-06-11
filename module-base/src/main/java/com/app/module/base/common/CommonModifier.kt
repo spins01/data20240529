@@ -1,7 +1,5 @@
 package com.app.module.base.common
 
-
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
-import com.google.android.exoplayer2.C
+
 
 
 /**
