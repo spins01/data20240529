@@ -1,5 +1,6 @@
 package com.app.module.base.common
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +21,11 @@ import com.spins.module.base.R
 fun LoginInput() {
     val onValueChange = localAccountChange.current
     Row {
-        Spacer(modifier = Modifier.width(36.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         BasicTextField(
-            value = localAccount.current,
+            value = localAccount.current.value,
             onValueChange = { newValue ->
+                Log.i("马超","newValue${newValue}    ")
                 onValueChange(newValue)
             },
             textStyle = TextStyle.Default.copy(
@@ -40,6 +42,6 @@ fun LoginInput() {
 
 
         )
-        Spacer(modifier = Modifier.width(36.dp))
+        Spacer(modifier = Modifier.width(12.dp))
     }
 }

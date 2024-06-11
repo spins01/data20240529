@@ -15,4 +15,7 @@
     <!--My Project -->
     <string name="res_welcome" translatable="false">Welcome!</string>
     <string name="res_sign_in_tips" translatable="false">Please sign-in to your account and start the adventure</string>
+    <string name="res_account" translatable="false">Account</string>
+    <string name="res_account_empty" translatable="false">The Account field is required</string>
+    <string name="res_password_empty" translatable="false">The Password field is required</string>
 </resources>

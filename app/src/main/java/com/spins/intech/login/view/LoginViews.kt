@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +41,7 @@ import com.app.module.base.common.localAccount
 import com.app.module.base.common.localAccountChange
 import com.app.module.base.common.localAccountStatus
 import com.app.module.base.common.localOnAccountFocusChanged
+import com.spins.intech.R
 import com.spins.intech.login.domain.LoginIntent
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
@@ -58,10 +60,13 @@ private fun LoginView(
         needInit = needInit,
     ) { vm ->
         val accountStatusOb by vm.accountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
-        val accountOB by vm.account.collectAsState(initial = TextFieldValue())
         //账号变化
         val onAccountChange: (TextFieldValue) -> Unit = { textFieldValue ->
-            vm.account.value = textFieldValue.copy(text = textFieldValue.text.trim())
+            vm.account.value= textFieldValue.copy(text = textFieldValue.text.trim())
+            Log.i("马超","更新了:${vm.account.value}")
+            if (textFieldValue.text.isEmpty()) {
+                vm.accountStatus.value = LoginInputStatus.ERROR
+            }
         }
         //账号焦点变化
         val onAccountFocusChanged: (FocusState) -> Unit = { focusState ->
@@ -70,19 +75,19 @@ private fun LoginView(
             )
         }
         CompositionLocalProvider(
-            localAccount provides accountOB,
+            localAccount provides vm.account.collectAsState(initial = TextFieldValue()),
             localAccountChange provides onAccountChange,
             localAccountStatus provides accountStatusOb,
             localOnAccountFocusChanged provides onAccountFocusChanged
         ) {
             Column(
-//            horizontalAlignment = Alignment.Start,
                 modifier = Modifier
                     .fillMaxSize()
                     .nothing(),
             ) {
                 Spacer(modifier = Modifier.height(345.dp))
                 Column(Modifier.weight(1f)) {
+                    //Welcome
                     Text(
                         text = stringResource(id = com.res.R.string.res_welcome),
                         style = TextStyle(
@@ -105,19 +110,48 @@ private fun LoginView(
                         )
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
-                            .align(Alignment.CenterHorizontally)
-                            .background(
-                                color = colorResource(id = com.res.R.color.res_f5f8fb),
-                                shape = RoundedCornerShape(6.dp)
-                            )
                     ) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        LoginInput()
+                        Spacer(modifier = Modifier.width(36.dp))
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    color = colorResource(id = com.res.R.color.res_f5f8fb),
+                                    shape = RoundedCornerShape(6.dp)
+                                )
+                        ) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            if (accountStatusOb != LoginInputStatus.ERROR) {
+                                Text(
+                                    text = stringResource(id = com.res.R.string.res_account),
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        color = colorResource(id = com.res.R.color.res_667382)
+                                    ),
+                                    modifier = Modifier.padding(start = 12.dp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+
+                            LoginInput()
+                            if (accountStatusOb == LoginInputStatus.ERROR) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(id = com.res.R.string.res_account_empty),
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        color = colorResource(id = com.res.R.color.res_f7391f)
+                                    )
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(36.dp))
                     }
+
                 }
                 Spacer(modifier = Modifier.height(374.dp))
             }
