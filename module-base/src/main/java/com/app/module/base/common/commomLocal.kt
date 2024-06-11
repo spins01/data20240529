@@ -12,3 +12,11 @@ val localOnAccountFocusChanged =
     compositionLocalOf<(FocusState) -> Unit> { error("no value provided to localOnAccountFocusChanged") }
 val localAccountStatus =
     compositionLocalOf<LoginInputStatus> { error("no value provided to localOnAccountStatusChanged") }
+val localAccountErrorTips = compositionLocalOf <String>{ error("no value provided to localAccountErrorTips") }
+val localPassword = compositionLocalOf <State<TextFieldValue>>{ error("no value provided to localPassword") }
+val localPasswordChange = compositionLocalOf<(TextFieldValue) -> Unit>{  error("no value provided to localPasswordChange")  }
+val localOnPasswordFocusChanged =
+    compositionLocalOf<(FocusState) -> Unit> { error("no value provided to localOnAccountFocusChanged") }
+val localPasswordStatus =
+    compositionLocalOf<LoginInputStatus> { error("no value provided to localOnAccountStatusChanged") }
+val localPasswordErrorTips = compositionLocalOf <String>{ error("no value provided to localPasswordErrorTips") }

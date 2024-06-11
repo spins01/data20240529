@@ -35,13 +35,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.InputErrorTips
 import com.app.module.base.common.LoginInput
 import com.app.module.base.common.localAccount
 import com.app.module.base.common.localAccountChange
+import com.app.module.base.common.localAccountErrorTips
 import com.app.module.base.common.localAccountStatus
 import com.app.module.base.common.localOnAccountFocusChanged
-import com.spins.intech.R
+import com.app.module.base.common.localOnPasswordFocusChanged
+import com.app.module.base.common.localPassword
+import com.app.module.base.common.localPasswordChange
+import com.app.module.base.common.localPasswordErrorTips
+import com.app.module.base.common.localPasswordStatus
 import com.spins.intech.login.domain.LoginIntent
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
@@ -59,14 +66,18 @@ private fun LoginView(
     BusinessContentView<LoginViewModel>(
         needInit = needInit,
     ) { vm ->
+        //账号状态
         val accountStatusOb by vm.accountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
         //账号变化
         val onAccountChange: (TextFieldValue) -> Unit = { textFieldValue ->
-            vm.account.value= textFieldValue.copy(text = textFieldValue.text.trim())
-            Log.i("马超","更新了:${vm.account.value}")
+            vm.account.value = textFieldValue.copy(text = textFieldValue.text.trim())
             if (textFieldValue.text.isEmpty()) {
                 vm.accountStatus.value = LoginInputStatus.ERROR
+                vm.accountErrorTips.value = context.getString(com.res.R.string.res_account_empty)
+            } else {
+                vm.accountStatus.value = LoginInputStatus.FOCUS
             }
+
         }
         //账号焦点变化
         val onAccountFocusChanged: (FocusState) -> Unit = { focusState ->
@@ -74,11 +85,41 @@ private fun LoginView(
                 intent = LoginIntent.AccountFocusChange(context, focusState.isFocused)
             )
         }
+        //账号错误提示
+        val accountErrorTipsOb by vm.accountErrorTips.collectAsState(initial = stringResource(id = com.res.R.string.res_account_empty))
+        //密码状态
+        val passwordStatusOb by vm.passwordStatus.collectAsState(initial = LoginInputStatus.NORMAL)
+        //密码变化
+        val onPasswordChange: (TextFieldValue) -> Unit = { textFieldValue ->
+            vm.password.value = textFieldValue.copy(text = textFieldValue.text.trim())
+            if (textFieldValue.text.isEmpty()) {
+                vm.passwordStatus.value = LoginInputStatus.ERROR
+                vm.passwordErrorTips.value = context.getString(com.res.R.string.res_password_empty)
+            } else {
+                vm.passwordStatus.value = LoginInputStatus.FOCUS
+            }
+
+        }
+        //密码焦点变化
+        val onPasswordFocusChanged: (FocusState) -> Unit = { focusState ->
+            vm.addIntent(
+                intent = LoginIntent.PasswordFocusChange(context, focusState.isFocused)
+            )
+        }
+
+        //密码错误提示
+        val passwordErrorTipsOb by vm.passwordErrorTips.collectAsState(initial = stringResource(id = com.res.R.string.res_password_empty))
         CompositionLocalProvider(
             localAccount provides vm.account.collectAsState(initial = TextFieldValue()),
             localAccountChange provides onAccountChange,
             localAccountStatus provides accountStatusOb,
-            localOnAccountFocusChanged provides onAccountFocusChanged
+            localOnAccountFocusChanged provides onAccountFocusChanged,
+            localAccountErrorTips provides accountErrorTipsOb,
+            localPassword provides vm.password.collectAsState(initial = TextFieldValue()),
+            localPasswordChange provides onPasswordChange,
+            localPasswordStatus provides passwordStatusOb,
+            localOnPasswordFocusChanged provides onPasswordFocusChanged,
+            localPasswordErrorTips provides passwordErrorTipsOb
         ) {
             Column(
                 modifier = Modifier
@@ -102,8 +143,7 @@ private fun LoginView(
                     Text(
                         text = stringResource(id = com.res.R.string.res_sign_in_tips),
                         modifier = Modifier
-                            .padding(start = 36.dp)
-                            .align(Alignment.Start),
+                            .padding(start = 36.dp),
                         style = TextStyle(
                             fontSize = 14.sp,
                             color = colorResource(id = com.res.R.color.res_667382)
@@ -137,16 +177,28 @@ private fun LoginView(
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
 
-                            LoginInput()
+                            LoginInput(InputType.Account)
                             if (accountStatusOb == LoginInputStatus.ERROR) {
                                 Spacer(modifier = Modifier.height(4.dp))
+                                  InputErrorTips(InputType.Account)
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            if(passwordStatusOb != LoginInputStatus.ERROR){
                                 Text(
-                                    text = stringResource(id = com.res.R.string.res_account_empty),
+                                    text = stringResource(id = com.res.R.string.res_password),
                                     style = TextStyle(
                                         fontSize = 12.sp,
-                                        color = colorResource(id = com.res.R.color.res_f7391f)
-                                    )
+                                        color = colorResource(id = com.res.R.color.res_667382)
+                                    ),
+                                    modifier = Modifier.padding(start = 12.dp)
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                            //密码登录框
+                            LoginInput(InputType.Password)
+                            if(passwordStatusOb == LoginInputStatus.ERROR){
+                                Spacer(modifier = Modifier.height(4.dp))
+                                InputErrorTips(InputType.Password)
                             }
                         }
                         Spacer(modifier = Modifier.width(36.dp))
