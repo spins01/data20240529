@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="res_dark_background">#FF201A19</color>
+    <color name="res_light_background">#FFFFFBFF</color>
+    <color name="res_0D2478">#0D2478</color>
+    <color name="res_667382">#667382</color>
+    <color name="res_f5f8fb">#f5f8fb</color>
+    <color name="res_d8e3ed">#d8e3ed</color>
+    <color name="res_0f64e3">#0f64e3</color>
+    <color name="res_f7391f">#f7391f</color>
+    <color name="res_090E15">#090E15</color>
+</resources>

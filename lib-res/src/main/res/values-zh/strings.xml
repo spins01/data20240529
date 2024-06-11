@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="res_str_january">一月</string>
+    <string name="res_str_february">二月</string>
+    <string name="res_str_march">三月</string>
+    <string name="res_str_april">四月</string>
+    <string name="res_str_may">五月</string>
+    <string name="res_str_june">六月</string>
+    <string name="res_str_july">七月</string>
+    <string name="res_str_august">八月</string>
+    <string name="res_str_september">九月</string>
+    <string name="res_str_october">十月</string>
+    <string name="res_str_november">十一月</string>
+    <string name="res_str_december">十二月</string>
+</resources>

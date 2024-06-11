@@ -1,0 +1,48 @@
+框架说明
+-2，框架地址 https://github.com/xiaojinzi123/AndroidReactive
+-1，配置环境变量codeTemplate/bin
+0，创建module(library)，在终端进入com.intech.module_login.login，执行codeTemplate spins login    spins是公司的名字，login是模块的名字
+1，增加module需要两部，修改本module的gradle文件；build-logic中，修改AppPlugin的dependencies lambad表达式。
+2，可以获取管理Activity的堆栈。ActivityStack.xxx{}
+3，网络访问接口可以使用服务发现
+3，usercase就是启动的容器，用来接受参数的，LoginViews就是compose界面，LoginVos是用来生命一些View的Bean类的。开发者只关注LoginViews和LoginUseCase即可
+4，每个模块都可以实现IApplicationLifecycle，以做相应的处理。提供了模块级别的生命周期。不用声明，字节码插件会自动扫描到。不需要每个模块都写，用不到就删掉。
+5，启动页的配置
+Activity要增加@BootView注解
+<activity
+    android:name="com.app.module.user.module.loading.view.LoadingAct"
+    android:exported="true"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.Tally.App.Loading"
+    android:windowSoftInputMode="adjustNothing">
+
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+
+    <intent-filter>
+        <action android:name="app_boot_20240527" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+
+</activity>
+6，修改VersionName的地方
+    ckProject/chenzhuqi/NewProject/app/build.gradle.kts
+    versionName = "1.0.0.0"
+7，module-base中添加依赖，如果只有自己的模块用到了，那就只在自己的模块中添加
+8，网络请求不要在View上写，在usecase中写，usecase中的initData(),可以在这个方法里初始化数据
+9， .nothing(),没啥用，以他结尾，方便修改。
+10，vm.addIntent()，在View层提交事件后，在LoginUseCaseImpl中处理。通过密封类的参数予以匹配。
+    内部的原理是，addIntent提交到一个Channel里(就是生产者和消费者模式，这个Channel是一个无限大的容器)。Channel会通过反射找到LoginUseCaseImpl中的方法
+11,PublishHotObservable这个注解表示SharedFlow。StateHotObservable这个注解表示StateFlow
+
+
+
+
+
+
+
+
+

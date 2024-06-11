@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="res_str_january">January</string>
+    <string name="res_str_february">February</string>
+    <string name="res_str_march">March</string>
+    <string name="res_str_april">April</string>
+    <string name="res_str_may">May</string>
+    <string name="res_str_june">June</string>
+    <string name="res_str_july">July</string>
+    <string name="res_str_august">August</string>
+    <string name="res_str_september">September</string>
+    <string name="res_str_october">October</string>
+    <string name="res_str_november">November</string>
+    <string name="res_str_december">December</string>
+    <!--My Project -->
+    <string name="res_welcome" translatable="false">Welcome!</string>
+    <string name="res_sign_in_tips" translatable="false">Please sign-in to your account and start the adventure</string>
+</resources>
