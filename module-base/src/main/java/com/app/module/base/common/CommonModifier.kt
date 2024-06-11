@@ -14,7 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
-
+import com.xiaojinzi.support.ktx.nothing
 
 
 /**
@@ -44,6 +44,7 @@ fun Modifier.loginInput(
         .border(borderWidth, borderColor, RoundedCornerShape(6.dp))
         .background(Color.White, RoundedCornerShape(6.dp))
         .padding(start = 10.dp)
+
         .height(42.dp)
         .onFocusChanged { focusState ->
             when (inputType) {
@@ -52,4 +53,15 @@ fun Modifier.loginInput(
             }
 
         }
+        .run {
+            /**
+             * 可以在这里定义逻辑。
+             * if(true){
+             * this
+             * }else{
+             * this.background()
+             * }
+             */
+            this }
+        .nothing()
 }
