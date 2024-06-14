@@ -31,7 +31,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "NewProject"
 include(":app")
-include(":module-user")
 include(":module-base")
 include(":lib-res")
 

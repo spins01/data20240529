@@ -37,6 +37,33 @@ Activity要增加@BootView注解
 10，vm.addIntent()，在View层提交事件后，在LoginUseCaseImpl中处理。通过密封类的参数予以匹配。
     内部的原理是，addIntent提交到一个Channel里(就是生产者和消费者模式，这个Channel是一个无限大的容器)。Channel会通过反射找到LoginUseCaseImpl中的方法
 11,PublishHotObservable这个注解表示SharedFlow。StateHotObservable这个注解表示StateFlow
+12,app/src/main/java/com/spins/intech/App.kt  文件中，
+ReactiveTemplate.config(
+            isDebug = BuildConfig.DEBUG,
+            errorCustom = { error ->
+                when (error) {
+
+                    is CommonBusinessException -> {
+                        error.message.orNull()?.toStringItemDto()
+                    }
+
+                    else -> null
+                }
+            },
+            errorCustomIgnore = { error ->
+                when {
+                    ErrorIgnore.isIgnore(
+                        throwable = error,
+                    ) -> {
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        )
+        ReactiveTemplateCompose中可以自定义toast
+
 
 
 

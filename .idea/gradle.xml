@@ -26,7 +26,6 @@
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/lib-res" />
             <option value="$PROJECT_DIR$/module-base" />
-            <option value="$PROJECT_DIR$/module-user" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

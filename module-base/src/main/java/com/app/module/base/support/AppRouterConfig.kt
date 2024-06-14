@@ -15,3 +15,7 @@ object AppRouterConfig {
     const val CUSTOM_SYSTEM_SHARE = "$HOST_CUSTOM/systemShare"
 
 }
+
+
+const val LOGIN_ACTIVITY = "login/LoginActivity"
+const val ACCOUNT_ACTIVITY = "login/AccountActivity"

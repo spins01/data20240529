@@ -36,6 +36,7 @@ fun GradientButton(isEnabled: Boolean,name:String,onClick:()->Unit){
         Spacer(modifier = Modifier.width(39.dp))
         Button(
             onClick = onClick,
+            enabled = isEnabled,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             contentPadding = PaddingValues(all = 0.dp),
             modifier = Modifier

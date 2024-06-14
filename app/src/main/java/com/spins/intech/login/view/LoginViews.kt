@@ -49,7 +49,9 @@ import com.app.module.base.common.localPassword
 import com.app.module.base.common.localPasswordChange
 import com.app.module.base.common.localPasswordErrorTips
 import com.app.module.base.common.localPasswordStatus
+import com.app.module.base.support.AppRouterApi
 import com.spins.intech.login.domain.LoginIntent
+import com.xiaojinzi.component.impl.Router
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -208,7 +210,7 @@ private fun LoginView(
                             GradientButton(buttonIsEnabledOb,
                                 stringResource(id = com.res.R.string.res_sign_in)
                             ) {
-
+                                 Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                         }
