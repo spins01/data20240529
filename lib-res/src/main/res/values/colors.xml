@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="res_black">#FF000000</color>
+    <color name="res_white">#FFFFFFFF</color>
     <color name="res_dark_background">#FF201A19</color>
     <color name="res_light_background">#FFFFFBFF</color>
     <color name="res_0D2478">#0D2478</color>
@@ -11,4 +13,5 @@
     <color name="res_090E15">#090E15</color>
     <color name="res_167AFF">#167AFF</color>
     <color name="res_2eafff">#2EAFFF</color>
+    <color name="res_cbcfd4">#CBCFD4</color>
 </resources>

@@ -232,12 +232,7 @@ private fun LoginView(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun LoginViewWrap() {
     Scaffold(
-//        topBar = {
-//            AppbarNormalM3(
-//                title = "hello".toStringItemDto(),
-//            )
-//        }
-        Modifier.background(Color.White)
+        containerColor = Color.White
     )
     {
         Box(

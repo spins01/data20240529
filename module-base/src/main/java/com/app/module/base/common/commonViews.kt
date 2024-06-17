@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.InputType
 
+@Composable
+fun DrawGradientLine( colors: List<Color>) {
+    val gradient = Brush.horizontalGradient(
+        colors = colors,
+        tileMode = TileMode.Clamp
+    )
+    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxHeight().width(4.dp)) {
+        drawLine(gradient, Offset(size.width/2,0f), Offset(size.width/2,size.height),4.dp.toPx())
+    }
+}
 @Composable
 fun GradientButton(isEnabled: Boolean,name:String,onClick:()->Unit){
     val mBrush:Brush = if(isEnabled){

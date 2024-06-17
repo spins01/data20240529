@@ -63,8 +63,25 @@ ReactiveTemplate.config(
             }
         )
         ReactiveTemplateCompose中可以自定义toast
+13，设置这个屏幕的背景色  containerColor = Color.White
+fun AccountViewWrap() {
 
+            Scaffold(
+                             containerColor = Color.White
+                         ) {
+                             Box(
+                                 modifier = Modifier
+                                     .padding(top = it.calculateTopPadding())
+                                     .nothing(),
+                             ) {
+                                 AccountView()
+                             }
+                         }
+                     }
 
+14，沉浸式设置
+      window.translateStatusBar()
+           WindowCompat.setDecorFitsSystemWindows(window, false)
 
 
 

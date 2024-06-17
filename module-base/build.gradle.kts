@@ -30,4 +30,7 @@ dependencies {
     api(libs.glance.appwidget)
     api(libs.glance.material3)
 
+    api ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+
 }
