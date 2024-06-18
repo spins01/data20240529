@@ -1,6 +1,7 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,11 +30,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,10 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.app.module.base.common.DrawGradientLine
+import com.app.module.base.common.clickableNoRipple
 import com.app.module.base.common.localDrawerState
 import com.app.module.base.common.localPagerState
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import com.spins.intech.R
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -146,6 +153,9 @@ private fun DrawContent() {
             .wrapContentWidth()
             .fillMaxHeight()
             .background(Color.White)
+            .clickableNoRipple {
+//禁止点击drawerContent关闭，空实现即可。同时去除水波纹
+            }
             .nothing()
     ) {
         DrawColumnContent()
@@ -157,7 +167,8 @@ private fun DrawContent() {
 @Composable
 private fun DrawColumnContent() {
     val scope = rememberCoroutineScope()
-    val drawerState= localDrawerState.current
+    val drawerState = localDrawerState.current
+    val pagerState =  localPagerState.current
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -196,7 +207,7 @@ private fun DrawColumnContent() {
                 }
             )
             Image(painter = painterResource(id = com.res.R.drawable.close),
-                contentDescription = "关闭按钮",
+                contentDescription = "关闭Drawer按钮",
                 modifier = Modifier
                     .width(14.dp)
                     .height(14.dp)
@@ -214,5 +225,71 @@ private fun DrawColumnContent() {
 
         }
         Spacer(modifier = Modifier.height(24.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+        ) {
+            Spacer(modifier = Modifier.width(14.dp))
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(60.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                colorResource(id = com.res.R.color.res_2eafff),
+                                colorResource(id = com.res.R.color.res_167AFF)
+                            )
+                        )
+                    )
+                    .clickableNoRipple {
+                        scope.launch {
+                            drawerState.close()
+                            pagerState.scrollToPage(0)
+                        }
+                    }
+            ){
+                Spacer(modifier = Modifier.width(19.dp))
+                Image(painter = painterResource(id = com.res.R.drawable.white_circle), contentDescription = "白色圆圈", modifier = Modifier
+                    .width(13.dp)
+                    .height(13.dp))
+                Spacer(modifier = Modifier.width(33.dp))
+                Text(text = stringResource(id = com.res.R.string.res_member_list), style = TextStyle(color = Color.White, fontSize = 20.sp))
+            }
+            Spacer(modifier = Modifier.width(14.dp))
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+        ) {
+            Spacer(modifier = Modifier.width(14.dp))
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(60.dp)
+                    .background(colorResource(id = com.res.R.color.res_edf1f7))
+                    .clickableNoRipple {
+                        scope.launch {
+                            drawerState.close()
+                            pagerState.scrollToPage(1)
+                        }
+                    }){
+                Spacer(modifier = Modifier.width(19.dp))
+                Image(painter = painterResource(id = com.res.R.drawable.gray_circle), contentDescription = "灰色圆环", modifier = Modifier
+                    .width(13.dp)
+                    .height(13.dp))
+                Spacer(modifier = Modifier.width(33.dp))
+                Text(text = stringResource(id = com.res.R.string.res_role_permission), style = TextStyle(color = colorResource(
+                    id = com.res.R.color.res_667382
+                ), fontSize = 20.sp))
+            }
+            Spacer(modifier = Modifier.width(14.dp))
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(text = stringResource(id = com.res.R.string.res_log_out), style = TextStyle(fontSize = 20.sp), color = colorResource(id = com.res.R.color.res_667382
+        ), modifier = Modifier.padding(start = 15.dp))
     }
 }

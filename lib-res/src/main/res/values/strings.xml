@@ -20,4 +20,7 @@
     <string name="res_account_empty" translatable="false">The Account field is required</string>
     <string name="res_password_empty" translatable="false">The Password field is required</string>
     <string name="res_sign_in" translatable="false">Sign in</string>
+    <string name="res_member_list" translatable="false">会员列表</string>
+    <string name="res_role_permission" translatable="false">角色权限</string>
+    <string name="res_log_out" translatable="false">log out</string>
 </resources>

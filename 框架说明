@@ -83,6 +83,8 @@ fun AccountViewWrap() {
       window.translateStatusBar()
            WindowCompat.setDecorFitsSystemWindows(window, false)
 
+           也可以用enableEdgeToEdge()
+
 
 
 
