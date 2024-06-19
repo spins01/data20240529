@@ -29,10 +29,16 @@ fun Modifier.loginInput(
 ) = composed {
     val onAccountFocusChanged = localOnAccountFocusChanged.current
     val onPasswordFocusChange = localOnPasswordFocusChanged.current
-    val loginInputStatus = when(inputType){InputType.Account-> localAccountStatus.current
-    InputType.Password -> localPasswordStatus.current}
+    val onMemberAccountFocusChange = localMemberAccountFocusChange.current
+    val onTelephoneFocusChange = localTelephoneFocusChange.current
+    val loginInputStatus = when (inputType) {
+        InputType.Account -> localAccountStatus.current
+        InputType.Password -> localPasswordStatus.current
+        InputType.MemberAccount -> localMemberAccountStatus.current
+        InputType.Telephone -> localTelephoneStatus.current
+    }
 
-    val borderColor: Color= when (loginInputStatus) {
+    val borderColor: Color = when (loginInputStatus) {
         LoginInputStatus.ERROR -> colorResource(id = com.res.R.color.res_f7391f)
         LoginInputStatus.NORMAL -> colorResource(id = com.res.R.color.res_d8e3ed)
         LoginInputStatus.FOCUS -> colorResource(id = com.res.R.color.res_0f64e3)
@@ -54,6 +60,8 @@ fun Modifier.loginInput(
             when (inputType) {
                 InputType.Account -> onAccountFocusChanged(focusState)
                 InputType.Password -> onPasswordFocusChange(focusState)
+                InputType.MemberAccount -> onMemberAccountFocusChange(focusState)
+                InputType.Telephone -> onTelephoneFocusChange(focusState)
             }
 
         }
@@ -66,9 +74,11 @@ fun Modifier.loginInput(
              * this.background()
              * }
              */
-            this }
+            this
+        }
         .nothing()
 }
+
 /**
  * 没有涟漪效果的点击
  */
@@ -77,7 +87,7 @@ fun Modifier.clickableNoRipple(
     onClickLabel: String? = null,
     role: Role? = null,
     onClick: () -> Unit,
-):Modifier = composed {
+): Modifier = composed {
     clickable(
         indication = null,
         interactionSource = remember { MutableInteractionSource() },

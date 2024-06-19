@@ -23,4 +23,7 @@
     <string name="res_member_list" translatable="false">会员列表</string>
     <string name="res_role_permission" translatable="false">角色权限</string>
     <string name="res_log_out" translatable="false">log out</string>
+    <string name="res_member_account" translatable="false">会员账号</string>
+    <string name="res_create_time" translatable="false">创建时间</string>
+    <string name="res_manage" translatable="false">Manage</string>
 </resources>

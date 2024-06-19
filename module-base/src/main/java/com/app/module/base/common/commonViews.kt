@@ -34,7 +34,9 @@ fun DrawGradientLine( colors: List<Color>) {
         colors = colors,
         tileMode = TileMode.Clamp
     )
-    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxHeight().width(4.dp)) {
+    androidx.compose.foundation.Canvas(modifier = Modifier
+        .fillMaxHeight()
+        .width(4.dp)) {
         drawLine(gradient, Offset(size.width/2,0f), Offset(size.width/2,size.height),4.dp.toPx())
     }
 }
@@ -70,6 +72,7 @@ fun InputErrorTips(inputType: InputType) {
     val tips = when (inputType) {
         InputType.Account -> localAccountErrorTips.current
         InputType.Password -> localPasswordErrorTips.current
+        else -> ""
     }
     Text(
         text = tips,
@@ -82,21 +85,35 @@ fun InputErrorTips(inputType: InputType) {
 }
 
 @Composable
-fun LoginInput(inputType: InputType) {
+fun SpinsInput(inputType: InputType) {
     val onAccountValueChange = localAccountChange.current
     val onPasswordValueChange = localPasswordChange.current
+    val onMemberAccountValueChange = localMemberAccountChange.current
+    val onTelephoneValueChange = localTelephoneChange.current
     val inputValue = when (inputType) {
         InputType.Account -> localAccount.current.value
         InputType.Password -> localPassword.current.value
+        InputType.MemberAccount -> localMemberAccount.current.value
+        InputType.Telephone -> localTelephone.current.value
+    }
+    val leftSpace = when (inputType) {
+        InputType.Account,InputType.Password -> 12.dp
+        InputType.MemberAccount,InputType.Telephone -> 14.dp
+    }
+    val rightSpace = when (inputType) {
+        InputType.Account,InputType.Password -> 12.dp
+        InputType.MemberAccount,InputType.Telephone -> 118.dp
     }
     Row {
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(leftSpace))
         BasicTextField(
             value = inputValue,
             onValueChange = { newValue ->
                 when (inputType) {
                     InputType.Account -> onAccountValueChange(newValue)
                     InputType.Password -> onPasswordValueChange(newValue)
+                    InputType.MemberAccount -> onMemberAccountValueChange(newValue)
+                    InputType.Telephone -> onTelephoneValueChange(newValue)
                 }
 
             },
@@ -117,9 +134,7 @@ fun LoginInput(inputType: InputType) {
             modifier = Modifier
                 .weight(1f)
                 .loginInput(inputType)
-
-
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(rightSpace))
     }
 }

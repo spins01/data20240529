@@ -38,7 +38,7 @@ import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.common.GradientButton
 import com.app.module.base.common.InputErrorTips
-import com.app.module.base.common.LoginInput
+import com.app.module.base.common.SpinsInput
 import com.app.module.base.common.localAccount
 import com.app.module.base.common.localAccountChange
 import com.app.module.base.common.localAccountErrorTips
@@ -182,7 +182,7 @@ private fun LoginView(
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
 
-                            LoginInput(InputType.Account)
+                            SpinsInput(InputType.Account)
                             if (accountStatusOb == LoginInputStatus.ERROR) {
                                 Spacer(modifier = Modifier.height(4.dp))
                                   InputErrorTips(InputType.Account)
@@ -200,7 +200,7 @@ private fun LoginView(
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
                             //密码登录框
-                            LoginInput(InputType.Password)
+                            SpinsInput(InputType.Password)
                             if(passwordStatusOb == LoginInputStatus.ERROR){
                                 Spacer(modifier = Modifier.height(4.dp))
                                 InputErrorTips(InputType.Password)

@@ -1,13 +1,13 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,17 +41,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.glance.color.DynamicThemeColorProviders.background
+import com.app.module.base.bean.InputType
+import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.common.DrawGradientLine
+import com.app.module.base.common.SpinsInput
 import com.app.module.base.common.clickableNoRipple
 import com.app.module.base.common.localDrawerState
+import com.app.module.base.common.localMemberAccount
+import com.app.module.base.common.localMemberAccountChange
+import com.app.module.base.common.localMemberAccountFocusChange
+import com.app.module.base.common.localMemberAccountStatus
+import com.app.module.base.common.localMemberListScrollState
 import com.app.module.base.common.localPagerState
+import com.app.module.base.common.localRoleManagerScrollState
+import com.app.module.base.common.localTelephone
+import com.app.module.base.common.localTelephoneChange
+import com.app.module.base.common.localTelephoneFocusChange
+import com.app.module.base.common.localTelephoneStatus
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import com.spins.intech.R
+import com.spins.intech.account.domain.AccountIntent
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -80,9 +96,35 @@ private fun AccountView(
             )
         )
         val drawerStateOb by vm.drawerState.collectAsState(initial = DrawerState(DrawerValue.Closed))
+
+        val onMemberAccountChange: (TextFieldValue) -> Unit = { textFieldValue ->
+
+        }
+
+        val onTelephoneChange:(TextFieldValue) -> Unit = {textFieldValue ->
+
+        }
+        val memberAccountOb by vm.memberAccountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
+        val telephoneStatusOb by vm.telephoneStatus.collectAsState(initial = LoginInputStatus.NORMAL)
+        val onMemberAccountFocusChanged:(FocusState) -> Unit = {focusState ->
+            vm.addIntent(AccountIntent.MemberAccountFocusChange(context,focusState.isFocused))
+        }
+        val onTelephoneFocusChanged:(FocusState) -> Unit = {focusState ->
+            vm.addIntent(AccountIntent.TelephoneFocusChange(context,focusState.isFocused))
+        }
         CompositionLocalProvider(
             localDrawerState provides drawerStateOb,
-            localPagerState provides pagerStateOb
+            localPagerState provides pagerStateOb,
+            localMemberListScrollState provides memberListScrollStateOb,
+            localRoleManagerScrollState provides roleManagerScrollStateOb,
+            localMemberAccountChange provides onMemberAccountChange,
+            localTelephoneChange provides onTelephoneChange,
+            localMemberAccount provides vm.memberAccount.collectAsState(initial = TextFieldValue()),
+            localTelephone provides vm.telephone.collectAsState(initial = TextFieldValue()),
+            localMemberAccountStatus provides memberAccountOb,
+            localTelephoneStatus provides telephoneStatusOb,
+            localMemberAccountFocusChange provides onMemberAccountFocusChanged,
+            localTelephoneFocusChange provides onTelephoneFocusChanged
         ) {
             ModalNavigationDrawer(
                 drawerContent = { DrawContent() },
@@ -138,12 +180,85 @@ private fun AccountViewPreview() {
 
 @Composable
 private fun MemberList() {
-    Text("会员列表", style = TextStyle(fontSize = 40.sp))
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .horizontalScroll(state = localMemberListScrollState.current)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+
+            )
+            OpenDrawerIcon()
+            Spacer(modifier = Modifier.height(31.dp))
+            Text(
+                text = stringResource(id = com.res.R.string.res_member_account),
+                modifier = Modifier.padding(start = 14.dp),
+                style = TextStyle(
+                    fontSize = 14.sp, color = colorResource(
+                        id = com.res.R.color.res_667382
+                    )
+                )
+            )
+            Spacer(modifier = Modifier.height(9.dp))
+            SpinsInput(inputType = InputType.MemberAccount)
+            Spacer(modifier = Modifier.height(15.dp))
+            SpinsInput(inputType = InputType.Telephone)
+        }
+    }
+
 }
 
 @Composable
 private fun RowManage() {
-    Text("角色权限", style = TextStyle(fontSize = 40.sp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(16.dp))
+        OpenDrawerIcon()
+        Spacer(modifier = Modifier.height(31.dp))
+        Text(
+            text = stringResource(id = com.res.R.string.res_manage),
+            modifier = Modifier.padding(start = 14.dp),
+            style = TextStyle(
+                fontSize = 22.sp, color = colorResource(
+                    id = com.res.R.color.res_0D2478
+                ), fontWeight = FontWeight(600)
+            )
+        )
+        Spacer(modifier = Modifier.height(23.dp))
+        Text(
+            text = stringResource(id = com.res.R.string.res_create_time),
+            modifier = Modifier.padding(start = 14.dp),
+            style = TextStyle(
+                fontSize = 14.sp, color = colorResource(
+                    id = com.res.R.color.res_667382
+                )
+            )
+        )
+        Row() {
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Spacer(modifier = Modifier.width(118.dp))
+        }
+    }
+
+}
+
+@Composable
+private fun OpenDrawerIcon() {
+    val scope = rememberCoroutineScope()
+    val drawerState = localDrawerState.current
+    Row(modifier = Modifier.padding(start = 14.dp)) {
+        Image(painter = painterResource(id = com.res.R.drawable.open_drawer),
+            contentDescription = "打开抽屉",
+            modifier =
+            Modifier.clickableNoRipple {
+                scope.launch {
+                    drawerState.open()
+                }
+            })
+    }
 }
 
 @Composable
@@ -168,7 +283,7 @@ private fun DrawContent() {
 private fun DrawColumnContent() {
     val scope = rememberCoroutineScope()
     val drawerState = localDrawerState.current
-    val pagerState =  localPagerState.current
+    val pagerState = localPagerState.current
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -249,13 +364,20 @@ private fun DrawColumnContent() {
                             pagerState.scrollToPage(0)
                         }
                     }
-            ){
+            ) {
                 Spacer(modifier = Modifier.width(19.dp))
-                Image(painter = painterResource(id = com.res.R.drawable.white_circle), contentDescription = "白色圆圈", modifier = Modifier
-                    .width(13.dp)
-                    .height(13.dp))
+                Image(
+                    painter = painterResource(id = com.res.R.drawable.white_circle),
+                    contentDescription = "白色圆圈",
+                    modifier = Modifier
+                        .width(13.dp)
+                        .height(13.dp)
+                )
                 Spacer(modifier = Modifier.width(33.dp))
-                Text(text = stringResource(id = com.res.R.string.res_member_list), style = TextStyle(color = Color.White, fontSize = 20.sp))
+                Text(
+                    text = stringResource(id = com.res.R.string.res_member_list),
+                    style = TextStyle(color = Color.White, fontSize = 20.sp)
+                )
             }
             Spacer(modifier = Modifier.width(14.dp))
         }
@@ -276,20 +398,35 @@ private fun DrawColumnContent() {
                             drawerState.close()
                             pagerState.scrollToPage(1)
                         }
-                    }){
+                    }) {
                 Spacer(modifier = Modifier.width(19.dp))
-                Image(painter = painterResource(id = com.res.R.drawable.gray_circle), contentDescription = "灰色圆环", modifier = Modifier
-                    .width(13.dp)
-                    .height(13.dp))
+                Image(
+                    painter = painterResource(id = com.res.R.drawable.gray_circle),
+                    contentDescription = "灰色圆环",
+                    modifier = Modifier
+                        .width(13.dp)
+                        .height(13.dp)
+                )
                 Spacer(modifier = Modifier.width(33.dp))
-                Text(text = stringResource(id = com.res.R.string.res_role_permission), style = TextStyle(color = colorResource(
-                    id = com.res.R.color.res_667382
-                ), fontSize = 20.sp))
+                Text(
+                    text = stringResource(id = com.res.R.string.res_role_permission),
+                    style = TextStyle(
+                        color = colorResource(
+                            id = com.res.R.color.res_667382
+                        ), fontSize = 20.sp
+                    )
+                )
             }
             Spacer(modifier = Modifier.width(14.dp))
         }
         Spacer(modifier = Modifier.height(32.dp))
-        Text(text = stringResource(id = com.res.R.string.res_log_out), style = TextStyle(fontSize = 20.sp), color = colorResource(id = com.res.R.color.res_667382
-        ), modifier = Modifier.padding(start = 15.dp))
+        Text(
+            text = stringResource(id = com.res.R.string.res_log_out),
+            style = TextStyle(fontSize = 20.sp),
+            color = colorResource(
+                id = com.res.R.color.res_667382
+            ),
+            modifier = Modifier.padding(start = 15.dp)
+        )
     }
 }

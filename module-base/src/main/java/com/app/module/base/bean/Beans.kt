@@ -4,5 +4,5 @@ enum class LoginInputStatus{
    NORMAL,FOCUS,ERROR,
 }
 enum class InputType{
-   Account,Password,
+   Account,Password,MemberAccount,Telephone
 }
