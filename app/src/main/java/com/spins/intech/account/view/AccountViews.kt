@@ -205,6 +205,16 @@ private fun MemberList() {
             Spacer(modifier = Modifier.height(9.dp))
             SpinsInput(inputType = InputType.MemberAccount)
             Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = stringResource(id = com.res.R.string.res_telephone),
+                modifier = Modifier.padding(start = 14.dp),
+                style = TextStyle(
+                    fontSize = 14.sp, color = colorResource(
+                        id = com.res.R.color.res_667382
+                    )
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             SpinsInput(inputType = InputType.Telephone)
         }
     }
