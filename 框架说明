@@ -84,6 +84,7 @@ fun AccountViewWrap() {
            WindowCompat.setDecorFitsSystemWindows(window, false)
 
            也可以用enableEdgeToEdge()
+15，增加插件(比如ksp)，是在ComponentKspConfigPlugin类,需要修改三个地方，详见该类增加ksp的过程
 
 
 

@@ -19,6 +19,7 @@ import com.xiaojinzi.support.ktx.orNull
 import com.xiaojinzi.support.ktx.toStringItemDto
 import com.xiaojinzi.tally.lib.res.model.exception.CommonBusinessException
 
+
 class App : Application() {
 
     private val tag = "App"
@@ -99,6 +100,8 @@ class App : Application() {
         )
 
     }
+
+
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

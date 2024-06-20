@@ -1,6 +1,7 @@
 package com.spins.intech.login.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.CommonInterface
 import com.app.module.base.common.GradientButton
 import com.app.module.base.common.InputErrorTips
 import com.app.module.base.common.SpinsInput
@@ -52,9 +55,11 @@ import com.app.module.base.common.localPasswordStatus
 import com.app.module.base.support.AppRouterApi
 import com.spins.intech.login.domain.LoginIntent
 import com.xiaojinzi.component.impl.Router
+import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
 @ExperimentalMaterial3Api
@@ -68,6 +73,7 @@ private fun LoginView(
     BusinessContentView<LoginViewModel>(
         needInit = needInit,
     ) { vm ->
+        val scope = rememberCoroutineScope()
         //登录按钮
         val buttonIsEnabledOb by vm.buttonIsEnabled.collectAsState(initial = false)
         //账号状态
@@ -210,7 +216,11 @@ private fun LoginView(
                             GradientButton(buttonIsEnabledOb,
                                 stringResource(id = com.res.R.string.res_sign_in)
                             ) {
-                                 Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
+                                scope.launch {
+                                    ServiceManager.get(CommonInterface::class)
+                                        ?.login(vm.account.value.text,vm.password.value.text)
+                                }
+//                                 Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                         }

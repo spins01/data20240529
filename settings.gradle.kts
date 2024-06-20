@@ -33,4 +33,4 @@ rootProject.name = "NewProject"
 include(":app")
 include(":module-base")
 include(":lib-res")
-
+include(":module-net")

@@ -38,6 +38,7 @@ class AppPlugin : Plugin<Project> {
             }
             dependencies {
                 add("implementation", project(":module-base"))
+                add("implementation", project(":module-net"))
             }
         }
     }
