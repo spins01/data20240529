@@ -2,6 +2,7 @@ package com.spins.intech.login.view
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.CommonCallback
 import com.app.module.base.common.CommonInterface
 import com.app.module.base.common.GradientButton
 import com.app.module.base.common.InputErrorTips
@@ -218,9 +220,18 @@ private fun LoginView(
                             ) {
                                 scope.launch {
                                     ServiceManager.get(CommonInterface::class)
-                                        ?.login(vm.account.value.text,vm.password.value.text)
+                                        ?.login(vm.account.value.text,vm.password.value.text,object : CommonCallback<String>{
+                                            override fun onSuccess(t: String) {
+                                                Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
+                                            }
+
+                                            override fun onError(errorMessage: String) {
+                                                 Toast.makeText(context,errorMessage,Toast.LENGTH_SHORT).show()
+                                            }
+
+                                        })
                                 }
-//                                 Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
+//
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                         }
