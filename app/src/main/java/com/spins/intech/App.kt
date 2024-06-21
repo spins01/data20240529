@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import com.app.module.base.ktx.getProcessName
 import com.app.module.base.support.DevelopHelper
+import com.tencent.mmkv.MMKV
 import com.xiaojinzi.component.Component
 import com.xiaojinzi.component.Config
 import com.xiaojinzi.component.error.ignore.ErrorIgnore
@@ -98,7 +99,7 @@ class App : Application() {
                 .autoRegisterModule(true)
                 .build()
         )
-
+        val rootDir = MMKV.initialize(this)
     }
 
 

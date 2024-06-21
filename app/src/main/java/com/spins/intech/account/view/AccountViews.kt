@@ -1,6 +1,7 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -50,6 +51,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.CommonInterface
+import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.common.DrawGradientLine
 import com.app.module.base.common.GradientSearchCreateButton
 import com.app.module.base.common.ManageInput
@@ -67,9 +70,12 @@ import com.app.module.base.common.localTelephone
 import com.app.module.base.common.localTelephoneChange
 import com.app.module.base.common.localTelephoneFocusChange
 import com.app.module.base.common.localTelephoneStatus
+import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.spins.intech.account.domain.AccountIntent
+import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -211,17 +217,17 @@ private fun MemberList() {
             /**
             Spacer(modifier = Modifier.height(15.dp))
             Text(
-                text = stringResource(id = com.res.R.string.res_telephone),
-                modifier = Modifier.padding(start = 14.dp),
-                style = TextStyle(
-                    fontSize = 14.sp, color = colorResource(
-                        id = com.res.R.color.res_667382
-                    )
-                )
+            text = stringResource(id = com.res.R.string.res_telephone),
+            modifier = Modifier.padding(start = 14.dp),
+            style = TextStyle(
+            fontSize = 14.sp, color = colorResource(
+            id = com.res.R.color.res_667382
+            )
+            )
             )
             Spacer(modifier = Modifier.height(8.dp))
             SpinsInput(inputType = InputType.Telephone)
-            */
+             */
             Spacer(modifier = Modifier.height(11.dp))
             GradientSearchCreateButton(ButtonType.MemberAccount,
                 stringResource(id = com.res.R.string.res_search),
@@ -321,6 +327,7 @@ private fun DrawColumnContent() {
     val scope = rememberCoroutineScope()
     val drawerState = localDrawerState.current
     val pagerState = localPagerState.current
+    val currentActivity = LocalContext.current as Activity
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -466,7 +473,25 @@ private fun DrawColumnContent() {
             color = colorResource(
                 id = com.res.R.color.res_667382
             ),
-            modifier = Modifier.padding(start = 15.dp)
+            modifier = Modifier
+                .padding(start = 15.dp)
+                .clickableNoRipple {
+                    scope.launch {
+                        ServiceManager
+                            .get(CommonInterface::class)
+                            ?.logOut(object : CommonNothingCallback {
+                                override fun onSuccess() {
+                                    SharedPreferenceUtil.deleteValueForKey(SPINS_TOKEN)
+                                    currentActivity.finish()
+                                }
+
+                                override fun onError(errorMessage: String) {
+
+                                }
+
+                            })
+                    }
+                }
         )
     }
 }

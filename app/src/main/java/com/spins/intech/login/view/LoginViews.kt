@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.common.CommonInterface
-import com.app.module.base.common.CommonNothingCallback
+import com.app.module.base.common.CommonObjCallback
 import com.app.module.base.common.GradientLoginButton
 import com.app.module.base.common.InputErrorTips
 import com.app.module.base.common.SpinsInput
@@ -53,6 +53,8 @@ import com.app.module.base.common.localPassword
 import com.app.module.base.common.localPasswordChange
 import com.app.module.base.common.localPasswordErrorTips
 import com.app.module.base.common.localPasswordStatus
+import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SharedPreferenceUtil
 import com.app.module.base.support.AppRouterApi
 import com.spins.intech.login.domain.LoginIntent
 import com.xiaojinzi.component.impl.Router
@@ -219,8 +221,10 @@ private fun LoginView(
                             ) {
                                 scope.launch {
                                     ServiceManager.get(CommonInterface::class)
-                                        ?.login(vm.account.value.text,vm.password.value.text,object : CommonNothingCallback{
-                                            override fun onSuccess() {
+                                        ?.login(vm.account.value.text,vm.password.value.text,object :
+                                            CommonObjCallback<String> {
+                                            override fun onSuccess(t:String) {
+                                                SharedPreferenceUtil.putString(SPINS_TOKEN,t)
                                                 Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
                                             }
 

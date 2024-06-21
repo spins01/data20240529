@@ -32,5 +32,7 @@ dependencies {
 
     api ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
+    api ("com.tencent:mmkv:1.3.5")
+
 
 }

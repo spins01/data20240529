@@ -1,6 +1,10 @@
 package com.intech.net
 
 import android.app.Application
+import android.util.Log
+import com.app.module.base.extension.Authorization
+import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SharedPreferenceUtil
 import com.module.net.BuildConfig
 import com.xiaojinzi.component.anno.ModuleAppAnno
 import com.xiaojinzi.component.application.IApplicationLifecycle
@@ -33,6 +37,13 @@ class NetModuleApplication: IApplicationLifecycle {
             .build()
         RxHttpPlugins.init(client) //自定义OkHttpClient对象
             .setDebug(BuildConfig.DEBUG, false, 2) //调试模式/分段打印/json数据格式化输出
-            .setOnParamAssembly { p: Param<*>? -> }
+            .setOnParamAssembly { p: Param<*>? ->
+                if(SharedPreferenceUtil.getString(SPINS_TOKEN)!=null&& SharedPreferenceUtil.getString(
+                        SPINS_TOKEN
+                    )!!.isNotEmpty()
+                ){
+                    p?.addHeader(Authorization,"Token ${SharedPreferenceUtil.getString(SPINS_TOKEN)}")
+                }
+            }
     }
 }

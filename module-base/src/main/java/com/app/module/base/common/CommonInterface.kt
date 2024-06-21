@@ -5,5 +5,7 @@ package com.app.module.base.common
 
 interface CommonInterface {
     //登录接口
-    suspend fun login(userName:String,password:String,callback: CommonNothingCallback)
+    suspend fun login(userName:String,password:String,callback: CommonObjCallback<String>)
+
+    suspend fun logOut(callback: CommonNothingCallback)
 }

@@ -1,7 +1,7 @@
 [versions]
 compileSdk = "34"
 targetSdk = "34"
-minSdk = "21"
+minSdk = "23"
 xiaojinzi_android_support = "v1.0-beta222"
 #xiaojinzi_android_module = "v1.0-beta48"
 xiaojinzi_android_module = "1a1a77bb69"

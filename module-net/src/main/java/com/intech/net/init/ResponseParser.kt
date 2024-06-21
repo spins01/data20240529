@@ -1,5 +1,6 @@
 package com.intech.net.init
 
+import android.util.Log
 import com.app.module.base.bean.BaseResponse
 import okhttp3.Response
 import rxhttp.wrapper.annotation.Parser
@@ -19,8 +20,8 @@ open class ResponseParser<T> : TypeParser<T> {
             if(data.code!=0){
                 throw ParseException(data.code.toString(),data.message,response)
             }
-            if(data.data == null){
-                t = if(data.token.isEmpty()){data.message as T}else{data.token as T}
+            if(t == null){
+                t = if(data.token == null || data.token.isEmpty()){data.message as T}else{data.token as T}
             }
             return t
     }
