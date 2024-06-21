@@ -24,6 +24,10 @@ sealed class AccountIntent {
 
     data class MemberAccountFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class TelephoneFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
+    data class CreateTimeLeftFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
+    data class CreateTimeRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
+    data class RoleNameLeftFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
+    data class RoleNameRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
 
 }
 
@@ -37,6 +41,16 @@ interface AccountUseCase : BusinessUseCase {
     val telephone: MutableStateFlow<TextFieldValue>
     val memberAccountStatus:MutableStateFlow<LoginInputStatus>
     val telephoneStatus:MutableStateFlow<LoginInputStatus>
+
+
+    val createTimeInputLeftValue:MutableStateFlow<TextFieldValue>
+    val createTimeInputRightValue:MutableStateFlow<TextFieldValue>
+    val createTimeInputLeftStatus:MutableStateFlow<LoginInputStatus>
+    val createTimeInputRightStatus:MutableStateFlow<LoginInputStatus>
+    val roleNameInputLeftValue:MutableStateFlow<TextFieldValue>
+    val roleNameInputRightValue:MutableStateFlow<TextFieldValue>
+    val roleNameInputLeftStatus:MutableStateFlow<LoginInputStatus>
+    val roleNameInputRightStatus:MutableStateFlow<LoginInputStatus>
 }
 
 @ViewModelLayer
@@ -63,7 +77,14 @@ class AccountUseCaseImpl(
 
     override val telephoneStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
 
-
+    override val createTimeInputLeftValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
+    override val createTimeInputRightValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
+    override val createTimeInputLeftStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
+    override val createTimeInputRightStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
+    override val roleNameInputLeftValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
+    override val roleNameInputRightValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
+    override val roleNameInputLeftStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
+    override val roleNameInputRightStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
 
     @IntentProcess
     @BusinessUseCase.AutoLoading
@@ -82,6 +103,42 @@ class AccountUseCaseImpl(
     @IntentProcess
     @BusinessUseCase.AutoLoading
     private suspend fun telephoneFocusChange(intent: AccountIntent.TelephoneFocusChange) {
+        if (intent.isFocus) {
+            telephoneStatus.value = LoginInputStatus.FOCUS
+        } else {
+            telephoneStatus.value = LoginInputStatus.NORMAL
+        }
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun createTimeLeftFocusChange(intent: AccountIntent.CreateTimeLeftFocusChange) {
+        if (intent.isFocus) {
+            telephoneStatus.value = LoginInputStatus.FOCUS
+        } else {
+            telephoneStatus.value = LoginInputStatus.NORMAL
+        }
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun createTimeRightFocusChange(intent: AccountIntent.CreateTimeRightFocusChange) {
+        if (intent.isFocus) {
+            telephoneStatus.value = LoginInputStatus.FOCUS
+        } else {
+            telephoneStatus.value = LoginInputStatus.NORMAL
+        }
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun roleNameLeftFocusChange(intent: AccountIntent.RoleNameLeftFocusChange) {
+        if (intent.isFocus) {
+            telephoneStatus.value = LoginInputStatus.FOCUS
+        } else {
+            telephoneStatus.value = LoginInputStatus.NORMAL
+        }
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun roleNameRightFocusChange(intent: AccountIntent.RoleNameRightFocusChange) {
         if (intent.isFocus) {
             telephoneStatus.value = LoginInputStatus.FOCUS
         } else {

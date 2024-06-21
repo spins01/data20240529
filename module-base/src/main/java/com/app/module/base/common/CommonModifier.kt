@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -25,7 +26,7 @@ import com.xiaojinzi.support.ktx.nothing
  * 登录输入框的样式
  */
 fun Modifier.loginInput(
-    inputType: InputType,
+    inputType: InputType,onLeftFocusChange:(FocusState)->Unit={},onRightFocusChange:(FocusState)->Unit = {}
 ) = composed {
     val onAccountFocusChanged = localOnAccountFocusChanged.current
     val onPasswordFocusChange = localOnPasswordFocusChanged.current

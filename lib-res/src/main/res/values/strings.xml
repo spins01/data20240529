@@ -27,4 +27,7 @@
     <string name="res_telephone" translatable="false">手机号码</string>
     <string name="res_create_time" translatable="false">创建时间</string>
     <string name="res_manage" translatable="false">Manage</string>
+    <string name="res_search" translatable="false">搜索</string>
+    <string name="res_bulk_import" translatable="false">批量导入</string>
+    <string name="res_create" translatable="false">创建</string>
 </resources>

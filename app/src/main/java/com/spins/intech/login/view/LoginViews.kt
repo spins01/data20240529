@@ -40,7 +40,7 @@ import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.common.CommonInterface
 import com.app.module.base.common.CommonNothingCallback
-import com.app.module.base.common.GradientButton
+import com.app.module.base.common.GradientLoginButton
 import com.app.module.base.common.InputErrorTips
 import com.app.module.base.common.SpinsInput
 import com.app.module.base.common.localAccount
@@ -214,7 +214,7 @@ private fun LoginView(
                             }
                             Spacer(modifier = Modifier.height(32.dp))
                             //登录按钮
-                            GradientButton(buttonIsEnabledOb,
+                            GradientLoginButton(buttonIsEnabledOb,
                                 stringResource(id = com.res.R.string.res_sign_in)
                             ) {
                                 scope.launch {

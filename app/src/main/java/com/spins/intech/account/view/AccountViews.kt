@@ -1,6 +1,7 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -46,10 +47,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.glance.color.DynamicThemeColorProviders.background
+import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.common.DrawGradientLine
+import com.app.module.base.common.GradientSearchCreateButton
+import com.app.module.base.common.ManageInput
 import com.app.module.base.common.SpinsInput
 import com.app.module.base.common.clickableNoRipple
 import com.app.module.base.common.localDrawerState
@@ -101,16 +104,16 @@ private fun AccountView(
 
         }
 
-        val onTelephoneChange:(TextFieldValue) -> Unit = {textFieldValue ->
+        val onTelephoneChange: (TextFieldValue) -> Unit = { textFieldValue ->
 
         }
         val memberAccountOb by vm.memberAccountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
         val telephoneStatusOb by vm.telephoneStatus.collectAsState(initial = LoginInputStatus.NORMAL)
-        val onMemberAccountFocusChanged:(FocusState) -> Unit = {focusState ->
-            vm.addIntent(AccountIntent.MemberAccountFocusChange(context,focusState.isFocused))
+        val onMemberAccountFocusChanged: (FocusState) -> Unit = { focusState ->
+            vm.addIntent(AccountIntent.MemberAccountFocusChange(context, focusState.isFocused))
         }
-        val onTelephoneFocusChanged:(FocusState) -> Unit = {focusState ->
-            vm.addIntent(AccountIntent.TelephoneFocusChange(context,focusState.isFocused))
+        val onTelephoneFocusChanged: (FocusState) -> Unit = { focusState ->
+            vm.addIntent(AccountIntent.TelephoneFocusChange(context, focusState.isFocused))
         }
         CompositionLocalProvider(
             localDrawerState provides drawerStateOb,
@@ -138,7 +141,7 @@ private fun AccountView(
                 ) { page ->
                     when (page) {
                         0 -> MemberList()
-                        1 -> RowManage()
+//                        1 -> RowManage(vm)
                     }
                 }
             }
@@ -203,7 +206,9 @@ private fun MemberList() {
                 )
             )
             Spacer(modifier = Modifier.height(9.dp))
+
             SpinsInput(inputType = InputType.MemberAccount)
+            /**
             Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = stringResource(id = com.res.R.string.res_telephone),
@@ -216,13 +221,25 @@ private fun MemberList() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             SpinsInput(inputType = InputType.Telephone)
+            */
+            Spacer(modifier = Modifier.height(11.dp))
+            GradientSearchCreateButton(ButtonType.MemberAccount,
+                stringResource(id = com.res.R.string.res_search),
+                stringResource(id = com.res.R.string.res_bulk_import),
+                {
+                    Log.i("马超", "搜索")
+                },
+                {
+                    Log.i("马超", "批量导入")
+                })
+            Spacer(modifier = Modifier.height(21.dp))
         }
     }
 
 }
 
 @Composable
-private fun RowManage() {
+private fun RowManage(vm: AccountViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(16.dp))
         OpenDrawerIcon()
@@ -246,11 +263,21 @@ private fun RowManage() {
                 )
             )
         )
-        Row() {
-            Spacer(modifier = Modifier.width(14.dp))
-
-            Spacer(modifier = Modifier.width(118.dp))
-        }
+//        ManageInput(
+//            leftValue = vm.createTimeInputLeftValue.collectAsState(initial = TextFieldValue()),
+//            rightValue = vm.
+//        )
+        Spacer(modifier = Modifier.height(9.dp))
+        GradientSearchCreateButton(ButtonType.Manager,
+            stringResource(id = com.res.R.string.res_search),
+            stringResource(id = com.res.R.string.res_create),
+            {
+                Log.i("马超", "搜索")
+            },
+            {
+                Log.i("马超", "创建")
+            })
+        Spacer(modifier = Modifier.height(23.dp))
     }
 
 }
@@ -391,44 +418,47 @@ private fun DrawColumnContent() {
             }
             Spacer(modifier = Modifier.width(14.dp))
         }
+        /**
         Spacer(modifier = Modifier.height(10.dp))
+
         Row(
-            Modifier
-                .fillMaxWidth()
-                .height(60.dp)
+        Modifier
+        .fillMaxWidth()
+        .height(60.dp)
         ) {
-            Spacer(modifier = Modifier.width(14.dp))
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(60.dp)
-                    .background(colorResource(id = com.res.R.color.res_edf1f7))
-                    .clickableNoRipple {
-                        scope.launch {
-                            drawerState.close()
-                            pagerState.scrollToPage(1)
-                        }
-                    }) {
-                Spacer(modifier = Modifier.width(19.dp))
-                Image(
-                    painter = painterResource(id = com.res.R.drawable.gray_circle),
-                    contentDescription = "灰色圆环",
-                    modifier = Modifier
-                        .width(13.dp)
-                        .height(13.dp)
-                )
-                Spacer(modifier = Modifier.width(33.dp))
-                Text(
-                    text = stringResource(id = com.res.R.string.res_role_permission),
-                    style = TextStyle(
-                        color = colorResource(
-                            id = com.res.R.color.res_667382
-                        ), fontSize = 20.sp
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.width(14.dp))
+        Spacer(modifier = Modifier.width(14.dp))
+        Row(verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+        .weight(1f)
+        .height(60.dp)
+        .background(colorResource(id = com.res.R.color.res_edf1f7))
+        .clickableNoRipple {
+        scope.launch {
+        drawerState.close()
+        pagerState.scrollToPage(1)
         }
+        }) {
+        Spacer(modifier = Modifier.width(19.dp))
+        Image(
+        painter = painterResource(id = com.res.R.drawable.gray_circle),
+        contentDescription = "灰色圆环",
+        modifier = Modifier
+        .width(13.dp)
+        .height(13.dp)
+        )
+        Spacer(modifier = Modifier.width(33.dp))
+        Text(
+        text = stringResource(id = com.res.R.string.res_role_permission),
+        style = TextStyle(
+        color = colorResource(
+        id = com.res.R.color.res_667382
+        ), fontSize = 20.sp
+        )
+        )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        }
+         */
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = stringResource(id = com.res.R.string.res_log_out),

@@ -6,3 +6,6 @@ enum class LoginInputStatus{
 enum class InputType{
    Account,Password,MemberAccount,Telephone
 }
+enum class ButtonType{
+   MemberAccount,Manager
+}
