@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,11 +53,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
-import com.app.module.base.common.CommonInterface
-import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.common.DrawGradientLine
 import com.app.module.base.common.GradientSearchCreateButton
-import com.app.module.base.common.ManageInput
 import com.app.module.base.common.SpinsInput
 import com.app.module.base.common.clickableNoRipple
 import com.app.module.base.common.localDrawerState
@@ -70,12 +69,9 @@ import com.app.module.base.common.localTelephone
 import com.app.module.base.common.localTelephoneChange
 import com.app.module.base.common.localTelephoneFocusChange
 import com.app.module.base.common.localTelephoneStatus
-import com.app.module.base.extension.SPINS_TOKEN
-import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.spins.intech.account.domain.AccountIntent
-import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -121,6 +117,10 @@ private fun AccountView(
         val onTelephoneFocusChanged: (FocusState) -> Unit = { focusState ->
             vm.addIntent(AccountIntent.TelephoneFocusChange(context, focusState.isFocused))
         }
+        val logout:()->Unit = {
+               vm.addIntent(AccountIntent.Logout(context))
+        }
+
         CompositionLocalProvider(
             localDrawerState provides drawerStateOb,
             localPagerState provides pagerStateOb,
@@ -136,7 +136,7 @@ private fun AccountView(
             localTelephoneFocusChange provides onTelephoneFocusChanged
         ) {
             ModalNavigationDrawer(
-                drawerContent = { DrawContent() },
+                drawerContent = { DrawContent(logout) },
                 drawerState = drawerStateOb,
                 scrimColor = Color.Transparent,
             ) {
@@ -189,6 +189,7 @@ private fun AccountViewPreview() {
 
 @Composable
 private fun MemberList() {
+
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -239,6 +240,16 @@ private fun MemberList() {
                     Log.i("马超", "批量导入")
                 })
             Spacer(modifier = Modifier.height(21.dp))
+            LazyColumn(modifier = Modifier
+                .weight(1f)
+                .background(Color.Green)
+                .fillMaxWidth()){
+//                   items()
+            }
+            Spacer(modifier = Modifier
+                .height(52.dp)
+                .navigationBarsPadding()
+            )
         }
     }
 
@@ -284,6 +295,13 @@ private fun RowManage(vm: AccountViewModel) {
                 Log.i("马超", "创建")
             })
         Spacer(modifier = Modifier.height(23.dp))
+        LazyColumn(modifier = Modifier
+            .weight(1f)
+            .background(Color.Green)){
+
+        }
+        Spacer(modifier = Modifier.height(52.dp))
+
     }
 
 }
@@ -305,7 +323,7 @@ private fun OpenDrawerIcon() {
 }
 
 @Composable
-private fun DrawContent() {
+private fun DrawContent(logout: () -> Unit) {
     Row(
         modifier = Modifier
             .wrapContentWidth()
@@ -316,18 +334,17 @@ private fun DrawContent() {
             }
             .nothing()
     ) {
-        DrawColumnContent()
+        DrawColumnContent(logout)
 
         DrawGradientLine(listOf(colorResource(id = com.res.R.color.res_cbcfd4), Color.White))
     }
 }
 
 @Composable
-private fun DrawColumnContent() {
+private fun DrawColumnContent(logout: () -> Unit) {
     val scope = rememberCoroutineScope()
     val drawerState = localDrawerState.current
     val pagerState = localPagerState.current
-    val currentActivity = LocalContext.current as Activity
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -476,21 +493,7 @@ private fun DrawColumnContent() {
             modifier = Modifier
                 .padding(start = 15.dp)
                 .clickableNoRipple {
-                    scope.launch {
-                        ServiceManager
-                            .get(CommonInterface::class)
-                            ?.logOut(object : CommonNothingCallback {
-                                override fun onSuccess() {
-                                    SharedPreferenceUtil.deleteValueForKey(SPINS_TOKEN)
-                                    currentActivity.finish()
-                                }
-
-                                override fun onError(errorMessage: String) {
-
-                                }
-
-                            })
-                    }
+                 logout()
                 }
         )
     }

@@ -85,6 +85,20 @@ fun AccountViewWrap() {
 
            也可以用enableEdgeToEdge()
 15，增加插件(比如ksp)，是在ComponentKspConfigPlugin类,需要修改三个地方，详见该类增加ksp的过程
+16， Spacer(modifier = Modifier
+                   .height(52.dp)
+                   .navigationBarsPadding()
+               )
+     可以使用.navigationBarsPadding()设置距离底部导航栏的高度
+17，RxHttp的注解编译器要和注解写在同一个module中
+
+18，ActivityStack的使用，首先在Activity上增加@ActivityFlag
+@ActivityFlag(
+    APP_ACTIVITY_FLAG_ACCOUNT,
+)
+@ViewLayer
+class AccountAct : BaseBusinessAct<AccountViewModel>() {}
+使用ActivityStack.finish{it.hasFlag(flag = APP_ACTIVITY_FLAG_ACCOUNT)}
 
 
 

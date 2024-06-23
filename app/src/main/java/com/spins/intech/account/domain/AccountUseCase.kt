@@ -2,20 +2,31 @@ package com.spins.intech.account.domain
 
 
 import android.content.Context
+import android.widget.Toast
 import androidx.annotation.UiContext
 import androidx.compose.foundation.ScrollState
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.ui.text.input.TextFieldValue
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.common.CommonInterface
+import com.app.module.base.common.CommonNothingCallback
+import com.app.module.base.extension.APP_ACTIVITY_FLAG_ACCOUNT
+import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.PagerState
+import com.spins.intech.login.domain.LoginIntent
+import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.anno.IntentProcess
 import com.xiaojinzi.reactive.template.domain.BusinessUseCase
 import com.xiaojinzi.reactive.template.domain.BusinessUseCaseImpl
 import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
+import com.xiaojinzi.support.activity_stack.ActivityStack
 import com.xiaojinzi.support.annotation.ViewModelLayer
+import com.xiaojinzi.tally.lib.res.ui.APP_ACTIVITY_FLAG_LOGIN
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 
 sealed class AccountIntent {
@@ -28,7 +39,7 @@ sealed class AccountIntent {
     data class CreateTimeRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class RoleNameLeftFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class RoleNameRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
-
+    data class Logout(@UiContext val context: Context) : AccountIntent()
 }
 
 @ViewModelLayer
@@ -144,6 +155,21 @@ class AccountUseCaseImpl(
         } else {
             telephoneStatus.value = LoginInputStatus.NORMAL
         }
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun logout(intent: AccountIntent.Logout) {
+        ServiceManager.get(CommonInterface::class)
+            ?.logOut(object : CommonNothingCallback{
+                override fun onSuccess() {
+                    SharedPreferenceUtil.deleteValueForKey(SPINS_TOKEN)
+                    ActivityStack.finish{it.hasFlag(flag = APP_ACTIVITY_FLAG_ACCOUNT)}
+                }
+
+                override fun onError(errorMessage: String) {
+                     Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
+                }
+            })
     }
 
 

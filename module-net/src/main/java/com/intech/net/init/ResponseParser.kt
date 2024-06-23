@@ -1,6 +1,5 @@
 package com.intech.net.init
 
-import android.util.Log
 import com.app.module.base.bean.BaseResponse
 import okhttp3.Response
 import rxhttp.wrapper.annotation.Parser
@@ -12,7 +11,7 @@ import java.lang.reflect.Type
 @Parser(name = "Response")
 open class ResponseParser<T> : TypeParser<T> {
     protected constructor() : super()
-    constructor(type: Type) : super()
+    constructor(type: Type) : super(type)
 
     override fun onParse(response: Response): T {
             val data: BaseResponse<T> = response.convertTo(BaseResponse::class, *types)
@@ -21,7 +20,8 @@ open class ResponseParser<T> : TypeParser<T> {
                 throw ParseException(data.code.toString(),data.message,response)
             }
             if(t == null){
-                t = if(data.token == null || data.token.isEmpty()){data.message as T}else{data.token as T}
+                t = data.message as T
+//                t = if(data.token == null || data.token.isEmpty()){data.message as T}else{data.token as T}
             }
             return t
     }

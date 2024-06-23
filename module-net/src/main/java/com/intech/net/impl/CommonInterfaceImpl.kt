@@ -1,5 +1,6 @@
 package com.intech.net.impl
 
+import com.app.module.base.bean.UserInfoBean
 import com.app.module.base.common.CommonInterface
 import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.common.CommonObjCallback
@@ -15,11 +16,11 @@ import rxhttp.wrapper.param.toFlowResponse
 
 @ServiceAnno(CommonInterface::class)
 class CommonInterfaceImpl : CommonInterface {
-    override suspend fun login(userName: String, password: String,callback: CommonObjCallback<String>) {
+    override suspend fun login(userName: String, password: String,callback: CommonObjCallback<UserInfoBean>) {
         val params = mapOf(spinsUsername to userName, spinsPassword to password)
         RxHttp.postJson(com.intech.net.constant.login)
             .addAll(params)
-            .toFlowResponse<String>()
+            .toFlowResponse<UserInfoBean>()
             .catch {
                 callback.onError(it.spinsMessage)
             }

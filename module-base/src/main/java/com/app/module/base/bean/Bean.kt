@@ -5,7 +5,6 @@ data class BaseResponse<T>(
     val code: Int,
     val data: T,
     val message: String,
-    val token:String
 )
 
 data class BasePageResponse<T>(
@@ -20,4 +19,11 @@ data class BasePageResponse<T>(
 data class Links(
     val next: Int?,
     val previous: Int?
+)
+data class UserInfoBean(
+    val csv_username: String,
+    val extensin_number: String,
+    val role: Int,
+    val token: String,
+    val username: String
 )

@@ -219,22 +219,7 @@ private fun LoginView(
                             GradientLoginButton(buttonIsEnabledOb,
                                 stringResource(id = com.res.R.string.res_sign_in)
                             ) {
-                                scope.launch {
-                                    ServiceManager.get(CommonInterface::class)
-                                        ?.login(vm.account.value.text,vm.password.value.text,object :
-                                            CommonObjCallback<String> {
-                                            override fun onSuccess(t:String) {
-                                                SharedPreferenceUtil.putString(SPINS_TOKEN,t)
-                                                Router.withApi(apiClass = AppRouterApi::class).toAccountView(context)
-                                            }
-
-                                            override fun onError(errorMessage: String) {
-                                                Toast.makeText(context,errorMessage,Toast.LENGTH_SHORT).show()
-                                            }
-
-                                        }
-                                        )
-                                }
+                                vm.addIntent(LoginIntent.Login(context))
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                         }

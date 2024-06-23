@@ -34,5 +34,7 @@ dependencies {
 
     api ("com.tencent:mmkv:1.3.5")
 
+    api("com.google.accompanist:accompanist-insets:0.24.3-alpha")
+
 
 }
