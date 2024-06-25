@@ -45,4 +45,7 @@
     <string name="res_jing" translatable="false">#</string>
     <string name="res_account_lower" translatable="false">account</string>
     <string name="res_commissioner" translatable="false">commissioner</string>
+    <string name="res_called" translatable="false">called</string>
+    <string name="res_not_called" translatable="false">not called</string>
+    <string name="res_failed" translatable="false">failed</string>
 </resources>

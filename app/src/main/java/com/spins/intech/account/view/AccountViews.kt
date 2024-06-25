@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.glance.color.DynamicThemeColorProviders.background
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
@@ -211,92 +213,102 @@ private fun AccountViewPreview() {
 
 @Composable
 private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>) {
-
-    Row(
+//    val scrollState = rememberScrollState()
+//    Row(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .horizontalScroll(scrollState)
+////            .horizontalScroll(state = localMemberListScrollState.current)
+//    ) {
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .horizontalScroll(state = localMemberListScrollState.current)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Spacer(
-                modifier = Modifier
-                    .height(16.dp)
+        Spacer(
+            modifier = Modifier
+                .height(16.dp)
 
-            )
-            OpenDrawerIcon()
-            Spacer(modifier = Modifier.height(31.dp))
-            Text(
-                text = stringResource(id = com.res.R.string.res_member_account),
-                modifier = Modifier.padding(start = 14.dp),
-                style = TextStyle(
-                    fontSize = 14.sp, color = colorResource(
-                        id = com.res.R.color.res_667382
-                    )
-                )
-            )
-            Spacer(modifier = Modifier.height(9.dp))
-
-            SpinsInput(inputType = InputType.MemberAccount)
-            /**
-            Spacer(modifier = Modifier.height(15.dp))
-            Text(
-            text = stringResource(id = com.res.R.string.res_telephone),
+        )
+        OpenDrawerIcon()
+        Spacer(modifier = Modifier.height(31.dp))
+        Text(
+            text = stringResource(id = com.res.R.string.res_member_account),
             modifier = Modifier.padding(start = 14.dp),
             style = TextStyle(
-            fontSize = 14.sp, color = colorResource(
-            id = com.res.R.color.res_667382
+                fontSize = 14.sp, color = colorResource(
+                    id = com.res.R.color.res_667382
+                )
             )
-            )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            SpinsInput(inputType = InputType.Telephone)
-             */
-            Spacer(modifier = Modifier.height(11.dp))
-            GradientSearchCreateButton(ButtonType.MemberAccount,
-                stringResource(id = com.res.R.string.res_search),
-                stringResource(id = com.res.R.string.res_bulk_import),
-                {
-                    search()
-                },
-                {
-                    Log.i("马超", "批量导入")
-                })
-            Spacer(modifier = Modifier.height(21.dp))
-            LazyColumn(
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier
-                    .weight(1f)
-                    .border(
-                        width = 1.dp,
-                        color = colorResource(id = com.res.R.color.res_edf1f7),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .clip(RoundedCornerShape(10.dp))
-                    .wrapContentWidth()
-                    .nothing()
+        )
+        Spacer(modifier = Modifier.height(9.dp))
 
-            ) {
-                item {
-                    SearchItemHeader()
-                }
-                itemsIndexed(searchList) { _, item ->
+        SpinsInput(inputType = InputType.MemberAccount)
+        /**
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+        text = stringResource(id = com.res.R.string.res_telephone),
+        modifier = Modifier.padding(start = 14.dp),
+        style = TextStyle(
+        fontSize = 14.sp, color = colorResource(
+        id = com.res.R.color.res_667382
+        )
+        )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SpinsInput(inputType = InputType.Telephone)
+         */
+        Spacer(modifier = Modifier.height(11.dp))
+        GradientSearchCreateButton(ButtonType.MemberAccount,
+            stringResource(id = com.res.R.string.res_search),
+            stringResource(id = com.res.R.string.res_bulk_import),
+            {
+                search()
+            },
+            {
+                Log.i("马超", "批量导入")
+            })
+        Spacer(modifier = Modifier.height(21.dp))
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .weight(1f)
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = com.res.R.color.res_edf1f7),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .horizontalScroll(state = localMemberListScrollState.current)
+                .clip(RoundedCornerShape(10.dp))
+                .wrapContentWidth()
+                .nothing()
 
-                    SearchItem(
-                        jing = item?.id.toString(),
-                        status = item?.status.toString(),
-                        account = item?.name.toString(),
-                        type = item?.dial_type.toString(),
-                        commissioner = item?.commissioner.toString()
-                    )
-                }
+        ) {
+            item {
+                SearchItemHeader()
             }
-            Spacer(
-                modifier = Modifier
-                    .height(52.dp)
-                    .navigationBarsPadding()
-            )
+            itemsIndexed(searchList) { _, item ->
+
+                SearchItem(
+                    jing = item?.id.toString(),
+//                    status = item?.status.toString(),
+                    status = when (item?.status) {
+                        1 -> stringResource(id = com.res.R.string.res_called)
+                        2 -> stringResource(id = com.res.R.string.res_not_called)
+                        else -> stringResource(id = com.res.R.string.res_failed)
+                    },
+                    account = item?.name.toString(),
+                    type = item?.dial_type.toString(),
+                    commissioner = item?.commissioner.toString()
+                )
+            }
         }
+        Spacer(
+            modifier = Modifier
+                .height(52.dp)
+                .navigationBarsPadding()
+        )
     }
+//    }
 
 }
 
