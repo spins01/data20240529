@@ -1,17 +1,24 @@
 package com.intech.net.impl
 
+import android.util.Log
+import com.app.module.base.bean.BasePageResponse
+import com.app.module.base.bean.SearchBean
 import com.app.module.base.bean.UserInfoBean
 import com.app.module.base.common.CommonInterface
+import com.app.module.base.common.CommonListCallback
 import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.common.CommonObjCallback
 import com.app.module.base.extension.SPINS_TOKEN
 import com.app.module.base.extension.SharedPreferenceUtil
+import com.intech.net.constant.spinsPage
+import com.intech.net.constant.spinsPageSize
 import com.intech.net.constant.spinsPassword
 import com.intech.net.constant.spinsUsername
 import com.intech.net.exception.spinsMessage
 import com.xiaojinzi.component.anno.ServiceAnno
 import kotlinx.coroutines.flow.catch
 import rxhttp.wrapper.param.RxHttp
+import rxhttp.wrapper.param.toFlowPageResponse
 import rxhttp.wrapper.param.toFlowResponse
 
 @ServiceAnno(CommonInterface::class)
@@ -35,6 +42,19 @@ class CommonInterfaceImpl : CommonInterface {
              .catch { callback.onError(it.spinsMessage) }
              .collect{
                  callback.onSuccess()
+             }
+    }
+
+    override suspend fun search(userName: String,currentPage:Int,pageSize:Int,callback:CommonListCallback<SearchBean>) {
+        val params = mapOf(spinsUsername to userName)
+         RxHttp.postJson("${com.intech.net.constant.search}?page_size=$pageSize&page=$currentPage")
+             .addAll(params)
+             .toFlowResponse<List<SearchBean>>()
+             .catch {
+                 callback.onError(it.spinsMessage)
+             }
+             .collect{
+                 callback.onSuccess(it)
              }
     }
 }

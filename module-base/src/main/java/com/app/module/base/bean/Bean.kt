@@ -11,7 +11,7 @@ data class BasePageResponse<T>(
     val code: Int,
     val count: Int,
     val current_page: Int,
-    val data: List<T>,
+    val `data`: T?,
     val links: Links,
     val total_pages: Int
 )
@@ -26,4 +26,13 @@ data class UserInfoBean(
     val role: Int,
     val token: String,
     val username: String
+)
+data class SearchBean(
+    val commissioner: String,
+    val create_time: String,
+    val dial_time: String,
+    val dial_type: String,
+    val id: Int,
+    val name: String,
+    val status: Int
 )

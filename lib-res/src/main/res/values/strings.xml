@@ -42,4 +42,7 @@
     <string name="res_status" translatable="false">status</string>
     <string name="res_type" translatable="false">type</string>
     <string name="res_create" translatable="false">Create</string>
+    <string name="res_jing" translatable="false">#</string>
+    <string name="res_account_lower" translatable="false">account</string>
+    <string name="res_commissioner" translatable="false">commissioner</string>
 </resources>

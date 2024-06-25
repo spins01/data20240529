@@ -9,13 +9,14 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.ui.text.input.TextFieldValue
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.bean.SearchBean
 import com.app.module.base.common.CommonInterface
+import com.app.module.base.common.CommonListCallback
 import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.extension.APP_ACTIVITY_FLAG_ACCOUNT
 import com.app.module.base.extension.SPINS_TOKEN
 import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.PagerState
-import com.spins.intech.login.domain.LoginIntent
 import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.anno.IntentProcess
 import com.xiaojinzi.reactive.template.domain.BusinessUseCase
@@ -24,9 +25,7 @@ import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
 import com.xiaojinzi.support.activity_stack.ActivityStack
 import com.xiaojinzi.support.annotation.ViewModelLayer
-import com.xiaojinzi.tally.lib.res.ui.APP_ACTIVITY_FLAG_LOGIN
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 
 sealed class AccountIntent {
@@ -40,6 +39,7 @@ sealed class AccountIntent {
     data class RoleNameLeftFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class RoleNameRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class Logout(@UiContext val context: Context) : AccountIntent()
+    data class Search(@UiContext val context: Context,val currentPage:Int,val pageSize:Int) : AccountIntent()
 }
 
 @ViewModelLayer
@@ -62,6 +62,10 @@ interface AccountUseCase : BusinessUseCase {
     val roleNameInputRightValue:MutableStateFlow<TextFieldValue>
     val roleNameInputLeftStatus:MutableStateFlow<LoginInputStatus>
     val roleNameInputRightStatus:MutableStateFlow<LoginInputStatus>
+
+    val currentPage:MutableStateFlow<Int>
+    val pageSize:MutableStateFlow<Int>
+    val searchList:MutableStateFlow<List<SearchBean?>>
 }
 
 @ViewModelLayer
@@ -96,11 +100,35 @@ class AccountUseCaseImpl(
     override val roleNameInputRightValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
     override val roleNameInputLeftStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
     override val roleNameInputRightStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
+    override val currentPage: MutableStateFlow<Int> = MutableStateFlow(1)
+
+    override val pageSize: MutableStateFlow<Int> = MutableStateFlow(4)
+    override val searchList:MutableStateFlow<List<SearchBean?>> = MutableStateFlow(mutableListOf())
+
 
     @IntentProcess
     @BusinessUseCase.AutoLoading
     private suspend fun submit(intent: AccountIntent.Submit) {
-        // TODO
+
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
+    private suspend fun search(intent: AccountIntent.Search) {
+         ServiceManager.get(CommonInterface::class)?.search(memberAccount.value.text,currentPage.value,pageSize.value,object :
+             CommonListCallback<SearchBean> {
+             override fun onSuccess(
+                 list: List<SearchBean>
+             ) {
+                 if(list.isNotEmpty()){
+                     searchList.value = list
+                 }
+             }
+
+
+             override fun onError(errorMessage: String) {
+
+             }
+         })
     }
     @IntentProcess
     @BusinessUseCase.AutoLoading

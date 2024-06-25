@@ -1,15 +1,17 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,8 +23,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,23 +44,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.bean.SearchBean
 import com.app.module.base.common.DrawGradientLine
 import com.app.module.base.common.GradientSearchCreateButton
 import com.app.module.base.common.SpinsInput
@@ -103,13 +122,13 @@ private fun AccountView(
         val drawerStateOb by vm.drawerState.collectAsState(initial = DrawerState(DrawerValue.Closed))
 
         val onMemberAccountChange: (TextFieldValue) -> Unit = { textFieldValue ->
-
+            vm.memberAccount.value = textFieldValue
         }
 
         val onTelephoneChange: (TextFieldValue) -> Unit = { textFieldValue ->
 
         }
-        val memberAccountOb by vm.memberAccountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
+        val memberAccountStatusOb by vm.memberAccountStatus.collectAsState(initial = LoginInputStatus.NORMAL)
         val telephoneStatusOb by vm.telephoneStatus.collectAsState(initial = LoginInputStatus.NORMAL)
         val onMemberAccountFocusChanged: (FocusState) -> Unit = { focusState ->
             vm.addIntent(AccountIntent.MemberAccountFocusChange(context, focusState.isFocused))
@@ -117,10 +136,13 @@ private fun AccountView(
         val onTelephoneFocusChanged: (FocusState) -> Unit = { focusState ->
             vm.addIntent(AccountIntent.TelephoneFocusChange(context, focusState.isFocused))
         }
-        val logout:()->Unit = {
-               vm.addIntent(AccountIntent.Logout(context))
+        val logout: () -> Unit = {
+            vm.addIntent(AccountIntent.Logout(context))
         }
-
+        val search: () -> Unit = {
+            vm.addIntent(AccountIntent.Search(context, vm.currentPage.value, vm.pageSize.value))
+        }
+        val searchListOb by vm.searchList.collectAsState(initial = mutableListOf())
         CompositionLocalProvider(
             localDrawerState provides drawerStateOb,
             localPagerState provides pagerStateOb,
@@ -130,7 +152,7 @@ private fun AccountView(
             localTelephoneChange provides onTelephoneChange,
             localMemberAccount provides vm.memberAccount.collectAsState(initial = TextFieldValue()),
             localTelephone provides vm.telephone.collectAsState(initial = TextFieldValue()),
-            localMemberAccountStatus provides memberAccountOb,
+            localMemberAccountStatus provides memberAccountStatusOb,
             localTelephoneStatus provides telephoneStatusOb,
             localMemberAccountFocusChange provides onMemberAccountFocusChanged,
             localTelephoneFocusChange provides onTelephoneFocusChanged
@@ -146,7 +168,7 @@ private fun AccountView(
                     userScrollEnabled = false
                 ) { page ->
                     when (page) {
-                        0 -> MemberList()
+                        0 -> MemberList(search, searchListOb)
 //                        1 -> RowManage(vm)
                     }
                 }
@@ -188,7 +210,7 @@ private fun AccountViewPreview() {
 }
 
 @Composable
-private fun MemberList() {
+private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>) {
 
     Row(
         modifier = Modifier
@@ -234,25 +256,256 @@ private fun MemberList() {
                 stringResource(id = com.res.R.string.res_search),
                 stringResource(id = com.res.R.string.res_bulk_import),
                 {
-                    Log.i("马超", "搜索")
+                    search()
                 },
                 {
                     Log.i("马超", "批量导入")
                 })
             Spacer(modifier = Modifier.height(21.dp))
-            LazyColumn(modifier = Modifier
-                .weight(1f)
-                .background(Color.Green)
-                .fillMaxWidth()){
-//                   items()
+            LazyColumn(
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier
+                    .weight(1f)
+                    .border(
+                        width = 1.dp,
+                        color = colorResource(id = com.res.R.color.res_edf1f7),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .clip(RoundedCornerShape(10.dp))
+                    .wrapContentWidth()
+                    .nothing()
+
+            ) {
+                item {
+                    SearchItemHeader()
+                }
+                itemsIndexed(searchList) { _, item ->
+
+                    SearchItem(
+                        jing = item?.id.toString(),
+                        status = item?.status.toString(),
+                        account = item?.name.toString(),
+                        type = item?.dial_type.toString(),
+                        commissioner = item?.commissioner.toString()
+                    )
+                }
             }
-            Spacer(modifier = Modifier
-                .height(52.dp)
-                .navigationBarsPadding()
+            Spacer(
+                modifier = Modifier
+                    .height(52.dp)
+                    .navigationBarsPadding()
             )
         }
     }
 
+}
+
+@Composable
+private fun SearchItemHeader() {
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .height(50.dp)
+            .background(
+                color = colorResource(id = com.res.R.color.res_edf1f7),
+                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+            )
+    ) {
+        TextItem(text = stringResource(id = com.res.R.string.res_jing), 36.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_status), 59.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_account_lower), 97.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_type), 123.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_commissioner), 125.dp)
+    }
+}
+
+@Composable
+private fun TextItem(text: String, with: Dp) {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(with), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 16.sp,
+                color = colorResource(id = com.res.R.color.res_333b43)
+            ),
+        )
+    }
+
+}
+
+@Composable
+private fun SearchItem(
+    jing: String,
+    status: String,
+    account: String,
+    type: String,
+    commissioner: String
+) {
+    Column {
+//        Divider(
+//            color = colorResource(id = com.res.R.color.res_edf1f7),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(1.dp)
+//                .nothing()
+//        )
+        Row(
+            modifier = Modifier
+                .wrapContentWidth()
+                .height(50.dp)
+//                .run {
+//                    if (isLast) {
+//                        clip(
+//                            RoundedCornerShape(
+//                                topStart = CornerSize(0.dp),
+//                                topEnd = CornerSize(0.dp),
+//                                bottomEnd = CornerSize(10.dp),
+//                                bottomStart = CornerSize(10.dp)
+//                            )
+//                        ).drawBehind {
+//                            val strokeWidth = 1.dp.toPx()
+//                            val halfStrokeWidth = strokeWidth / 2
+//                            val cornerRadius = 16.dp.toPx()
+//
+//                            // Draw left line
+//                            drawLine(
+//                                color = Color.Red,
+//                                start = androidx.compose.ui.geometry.Offset(halfStrokeWidth, 0f),
+//                                end = androidx.compose.ui.geometry.Offset(
+//                                    halfStrokeWidth,
+//                                    size.height - cornerRadius
+//                                ),
+//                                strokeWidth = strokeWidth
+//                            )
+//
+//                            // Draw bottom line with rounded corners
+//                            drawRoundRect(
+//                                color = Color.Red,
+//                                topLeft = androidx.compose.ui.geometry.Offset(
+//                                    0f,
+//                                    size.height - cornerRadius * 2
+//                                ),
+//                                size = androidx.compose.ui.geometry.Size(
+//                                    size.width,
+//                                    cornerRadius * 2
+//                                ),
+//                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+//                                    cornerRadius,
+//                                    cornerRadius
+//                                ),
+//                                style = Stroke(width = strokeWidth)
+//                            )
+//
+//                            // Draw right line
+//                            drawLine(
+//                                color = Color.Red,
+//                                start = androidx.compose.ui.geometry.Offset(
+//                                    size.width - halfStrokeWidth,
+//                                    0f
+//                                ),
+//                                end = androidx.compose.ui.geometry.Offset(
+//                                    size.width - halfStrokeWidth,
+//                                    size.height - cornerRadius
+//                                ),
+//                                strokeWidth = strokeWidth
+//                            )
+//                        }
+//                    } else {
+//                        drawBehind {
+//                            val strokeWidth = 1.dp.toPx()
+//                            val halfStrokeWidth = strokeWidth / 2
+//                            val width = size.width
+//                            val height = size.height
+//
+//                            // Draw right border
+//                            drawLine(
+//                                color = Color.Black,
+//                                start = Offset(width - halfStrokeWidth, 0f),
+//                                end = Offset(width - halfStrokeWidth, height),
+//                                strokeWidth = strokeWidth,
+//                                cap = StrokeCap.Square
+//                            )
+//
+//                            // Draw bottom border
+//                            drawLine(
+//                                color = Color.Black,
+//                                start = Offset(0f, height - halfStrokeWidth),
+//                                end = Offset(width, height - halfStrokeWidth),
+//                                strokeWidth = strokeWidth,
+//                                cap = StrokeCap.Square
+//                            )
+//
+//                            // Draw left border
+//                            drawLine(
+//                                color = Color.Black,
+//                                start = Offset(halfStrokeWidth, 0f),
+//                                end = Offset(halfStrokeWidth, height - halfStrokeWidth),
+//                                strokeWidth = strokeWidth,
+//                                cap = StrokeCap.Square
+//                            )
+//                        }
+//                    }
+//                }
+                .nothing()
+        ) {
+            TextItem(text = jing, 36.dp)
+            TextItem(text = status, 59.dp)
+            TextItem(text = account, 97.dp)
+            TextItem(text = type, 123.dp)
+            TextItem(text = commissioner, 125.dp)
+        }
+    }
+//    if (isLast) {
+//        Column {
+//            Divider(
+//                color = colorResource(id = com.res.R.color.res_edf1f7),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(1.dp)
+//            )
+//            Row(
+//                modifier = Modifier
+//                    .wrapContentWidth()
+//                    .height(50.dp)
+//                    .nothing()
+//            ) {
+//                TextItem(text = jing, 36.dp)
+//                TextItem(text = status, 59.dp)
+//                TextItem(text = account, 97.dp)
+//                TextItem(text = type, 123.dp)
+//                TextItem(text = commissioner, 125.dp)
+//            }
+//        }
+//    }else{
+//        Column {
+//            Divider(
+//                color = colorResource(id = com.res.R.color.res_edf1f7),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(1.dp)
+//            )
+//            Row(
+//                modifier = Modifier
+//                    .wrapContentWidth()
+//                    .height(50.dp)
+//                    .border(border = BorderStroke(width = 1.dp))
+//                    .background(
+//                        color = colorResource(id = com.res.R.color.res_edf1f7),
+//                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+//                    )
+//                    .nothing()
+//            ) {
+//                TextItem(text = jing, 36.dp)
+//                TextItem(text = status, 59.dp)
+//                TextItem(text = account, 97.dp)
+//                TextItem(text = type, 123.dp)
+//                TextItem(text = commissioner, 125.dp)
+//            }
+//        }
 }
 
 @Composable
@@ -295,9 +548,11 @@ private fun RowManage(vm: AccountViewModel) {
                 Log.i("马超", "创建")
             })
         Spacer(modifier = Modifier.height(23.dp))
-        LazyColumn(modifier = Modifier
-            .weight(1f)
-            .background(Color.Green)){
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .background(Color.Green)
+        ) {
 
         }
         Spacer(modifier = Modifier.height(52.dp))
@@ -493,7 +748,7 @@ private fun DrawColumnContent(logout: () -> Unit) {
             modifier = Modifier
                 .padding(start = 15.dp)
                 .clickableNoRipple {
-                 logout()
+                    logout()
                 }
         )
     }

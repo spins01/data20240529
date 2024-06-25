@@ -1,5 +1,6 @@
 package com.intech.net.init
 
+import com.app.module.base.bean.BasePageResponse
 import com.app.module.base.bean.BaseResponse
 import okhttp3.Response
 import rxhttp.wrapper.annotation.Parser
@@ -8,7 +9,7 @@ import rxhttp.wrapper.parse.TypeParser
 import rxhttp.wrapper.utils.convertTo
 import java.lang.reflect.Type
 
-@Parser(name = "Response")
+@Parser(name = "Response", wrappers = [MutableList::class,List::class])
 open class ResponseParser<T> : TypeParser<T> {
     protected constructor() : super()
     constructor(type: Type) : super(type)

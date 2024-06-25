@@ -10,7 +10,7 @@ import android.util.DisplayMetrics;
  * 修改density，densityDpi值-直接更改系统内部对于目标尺寸而言的像素密度
  */
 public class DensityUtils {
-    private static final float WIDTH = 470;
+    private static final float WIDTH = 375;
     private static float appDensity;
     private static float appScaleDensity;
 
