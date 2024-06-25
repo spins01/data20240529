@@ -3,7 +3,6 @@ package com.spins.intech.account.view
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
@@ -23,13 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
@@ -38,33 +33,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -172,8 +159,8 @@ private fun AccountView(
                 ) { page ->
 
                     when (page) {
-                        0 -> MemberList(search, searchListOb) {userName->
-                              vm.addIntent(AccountIntent.Call(context,userName))
+                        0 -> MemberList(search, searchListOb) { userName ->
+                            vm.addIntent(AccountIntent.Call(context, userName))
                         }
 //                        1 -> RowManage(vm)
                     }
@@ -216,7 +203,7 @@ private fun AccountViewPreview() {
 }
 
 @Composable
-private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>,call: (String) -> Unit) {
+private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -265,45 +252,49 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>,call: (
                 Log.i("马超", "批量导入")
             })
         Spacer(modifier = Modifier.height(21.dp))
-        LazyColumn(
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .weight(1f)
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = com.res.R.color.res_edf1f7),
-                    shape = RoundedCornerShape(10.dp)
-                )
-                .horizontalScroll(state = localMemberListScrollState.current)
-                .clip(RoundedCornerShape(10.dp))
-                .wrapContentWidth()
-                .nothing()
+        Row {
+            Spacer(modifier = Modifier.width(15.dp))
+            LazyColumn(
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier
+                    .weight(1f)
+                    .border(
+                        width = 1.dp,
+                        color = colorResource(id = com.res.R.color.res_edf1f7),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .horizontalScroll(state = localMemberListScrollState.current)
+                    .clip(RoundedCornerShape(10.dp))
+                    .wrapContentWidth()
+                    .nothing()
 
-        ) {
+            ) {
 
-            item {
-                SearchItemHeader()
-            }
-            itemsIndexed(searchList) { index, item ->
-                if(index == searchList.size-1){
-//                   LaunchedEffect(Unit) {
-                      search()
-//                   }
+                item {
+                    SearchItemHeader()
                 }
-                SearchItem(
-                    jing = item?.id.toString(),
-//                    status = item?.status.toString(),
-                    status = when (item?.status) {
-                        1 -> stringResource(id = com.res.R.string.res_called)
-                        2 -> stringResource(id = com.res.R.string.res_not_called)
-                        else -> stringResource(id = com.res.R.string.res_failed)
-                    },
-                    account = item?.name.toString(),
-                    type = item?.dial_type.toString(),
-                    commissioner = item?.commissioner.toString(),
-                    call
-                )
+                itemsIndexed(searchList) { index, item ->
+                    if (index == searchList.size - 1) {
+                        search()
+                    }
+                    Column(modifier = Modifier.wrapContentWidth()) {
+                        Divider(color = colorResource(id = com.res.R.color.res_edf1f7), modifier = Modifier.width(515.dp).height(1.dp))
+                        SearchItem(
+                            jing = item?.id.toString(),
+                            status = when (item?.status) {
+                                1 -> stringResource(id = com.res.R.string.res_called)
+                                2 -> stringResource(id = com.res.R.string.res_not_called)
+                                else -> stringResource(id = com.res.R.string.res_failed)
+                            },
+                            account = item?.name.toString(),
+                            type = item?.dial_type.toString(),
+                            commissioner = item?.commissioner.toString(),
+                            call
+                        )
+                    }
+                }
             }
+            Spacer(modifier = Modifier.width(15.dp))
         }
         Spacer(
             modifier = Modifier
@@ -327,29 +318,69 @@ private fun SearchItemHeader() {
             )
     ) {
         TextItem(text = stringResource(id = com.res.R.string.res_jing), 36.dp)
+        TextItem(
+            text = stringResource(id = com.res.R.string.res_operation),
+            width = 75.dp,
+        )
         TextItem(text = stringResource(id = com.res.R.string.res_status), 59.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_account_lower), 97.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_type), 123.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_commissioner), 125.dp)
+
     }
 }
 
 @Composable
-private fun TextItem(text: String, with: Dp) {
-    Box(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(with), contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = TextStyle(
-                fontSize = 16.sp,
-                color = colorResource(id = com.res.R.color.res_333b43)
-            ),
-        )
-    }
+private fun TextItem(
+    text: String,
+    width: Dp,
+    isButton: Boolean = false,
+    call: (String) -> Unit = {},
+    callAccount: String = ""
+) {
+    if (isButton) {
+       Column (modifier = Modifier.width(width)){
+           Spacer(modifier = Modifier
+               .height(10.dp)
+               .width(20.dp)
+               .nothing()
+               )
 
+           TextButton(
+               onClick = { call(callAccount) },
+               modifier = Modifier
+                   .background(
+                       color = colorResource(id = com.res.R.color.res_0f64e3),
+                       shape = RoundedCornerShape(5.dp)
+                   )
+                   .height(30.dp)
+                   .fillMaxSize()
+           ) {
+               Text(
+                   text = stringResource(id = com.res.R.string.res_call),
+                   style = TextStyle(color = Color.White, fontSize = 14.sp)
+               )
+           }
+           Spacer(modifier = Modifier
+               .height(10.dp)
+               .width(20.dp)
+               )
+       }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(width), contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = colorResource(id = com.res.R.color.res_333b43)
+                ),
+            )
+        }
+    }
 }
 
 @Composable
@@ -359,25 +390,29 @@ private fun SearchItem(
     account: String,
     type: String,
     commissioner: String,
-    call:(String)->Unit
+    call: (String) -> Unit
 ) {
-    Column {
+
         Row(
             modifier = Modifier
                 .wrapContentWidth()
                 .height(50.dp)
-                .clickableNoRipple {
-                    call(account)
-                }
                 .nothing()
         ) {
             TextItem(text = jing, 36.dp)
+            TextItem(
+                text = stringResource(id = com.res.R.string.res_call),
+                width = 75.dp,
+                isButton = true,
+                callAccount = account,
+                call = call
+            )
             TextItem(text = status, 59.dp)
             TextItem(text = account, 97.dp)
             TextItem(text = type, 123.dp)
             TextItem(text = commissioner, 125.dp)
         }
-    }
+
 }
 
 @Composable

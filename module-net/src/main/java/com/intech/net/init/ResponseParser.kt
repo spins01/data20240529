@@ -26,7 +26,7 @@ open class ResponseParser<T> : TypeParser<T> {
         }
         if (t is List<*>) {
             if (t.size > 0) {
-                var t0 = t[0]
+                val t0 = t[0]
                 if (t0 is ListParent) {
                     t0.count = data.count
                     t0.links = data.links

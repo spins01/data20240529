@@ -16,11 +16,13 @@ import com.app.module.base.support.AppRouterApi
 import com.xiaojinzi.component.impl.Router
 import com.xiaojinzi.component.impl.service.ServiceManager
 import com.xiaojinzi.reactive.anno.IntentProcess
+import com.xiaojinzi.reactive.template.ReactiveTemplate
 import com.xiaojinzi.reactive.template.domain.BusinessUseCase
 import com.xiaojinzi.reactive.template.domain.BusinessUseCaseImpl
 import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
 import com.xiaojinzi.support.annotation.ViewModelLayer
+import com.xiaojinzi.support.ktx.toStringItemDto
 import kotlinx.coroutines.flow.MutableStateFlow
 
 sealed class LoginIntent {
@@ -91,17 +93,22 @@ class LoginUseCaseImpl(
     @BusinessUseCase.AutoLoading
     private suspend fun login(intent: LoginIntent.Login) {
         ServiceManager.get(CommonInterface::class)
-            ?.login(account.value.text, password.value.text, object :
-                CommonObjCallback<UserInfoBean> {
-                override fun onSuccess(t: UserInfoBean) {
-                    SharedPreferenceUtil.putString(SPINS_TOKEN, t.token)
-                    Router.withApi(apiClass = AppRouterApi::class).toAccountView(intent.context)
-                }
+            ?.login(
+                account.value.text,
+                password.value.text,
+                object : CommonObjCallback<UserInfoBean> {
+                    override fun onSuccess(t: UserInfoBean) {
+                        SharedPreferenceUtil.putString(SPINS_TOKEN, t.token)
+                        Router.withApi(apiClass = AppRouterApi::class).toAccountView(intent.context)
+                    }
 
-                override fun onError(errorMessage: String) {
-                    Toast.makeText(intent.context,errorMessage,Toast.LENGTH_SHORT).show()
-                }
-            })
+                    override fun onError(errorMessage: String) {
+                        tip(errorMessage.toStringItemDto())
+                    }
+
+                })
+
+
     }
 //    @IntentProcess
 //    @BusinessUseCase.AutoLoading

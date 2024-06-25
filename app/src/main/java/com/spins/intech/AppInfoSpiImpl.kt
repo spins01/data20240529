@@ -35,7 +35,7 @@ class AppInfoSpiImpl : AppInfoSpi {
     }
 
     override val appIconRsd: Int
-        get() = R.mipmap.ic_launcher
+        get() = R.drawable.ic_launcher
 
     override val themeIndexStateOb = MutableSharedStateFlow<Int>()
         .spPersistence(

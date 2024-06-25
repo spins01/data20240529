@@ -48,4 +48,6 @@
     <string name="res_called" translatable="false">called</string>
     <string name="res_not_called" translatable="false">not called</string>
     <string name="res_failed" translatable="false">failed</string>
+    <string name="res_call" translatable="false">call</string>
+    <string name="res_operation" translatable="false">operation</string>
 </resources>
