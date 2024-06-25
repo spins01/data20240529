@@ -3,3 +3,4 @@ package com.intech.net.constant
 const val login = "login/"
 const val logOut = "logout/"
 const val search = "dial_list/"
+const val call = "click_on_call/"

@@ -2,6 +2,7 @@ package com.spins.intech.account.domain
 
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.UiContext
 import androidx.compose.foundation.ScrollState
@@ -39,7 +40,8 @@ sealed class AccountIntent {
     data class RoleNameLeftFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class RoleNameRightFocusChange(@UiContext val context: Context, val isFocus: Boolean):AccountIntent()
     data class Logout(@UiContext val context: Context) : AccountIntent()
-    data class Search(@UiContext val context: Context,val currentPage:Int,val pageSize:Int) : AccountIntent()
+    data class Search(@UiContext val context: Context,val currentPage:Int?,val pageSize:Int?) : AccountIntent()
+    data class Call(@UiContext val context: Context,val userName:String) : AccountIntent()
 }
 
 @ViewModelLayer
@@ -65,6 +67,7 @@ interface AccountUseCase : BusinessUseCase {
 
     val currentPage:MutableStateFlow<Int>
     val pageSize:MutableStateFlow<Int>
+    val totalPage:MutableStateFlow<Int>
     val searchList:MutableStateFlow<List<SearchBean?>>
 }
 
@@ -100,9 +103,10 @@ class AccountUseCaseImpl(
     override val roleNameInputRightValue: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
     override val roleNameInputLeftStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
     override val roleNameInputRightStatus: MutableStateFlow<LoginInputStatus> = MutableStateFlow(LoginInputStatus.NORMAL)
-    override val currentPage: MutableStateFlow<Int> = MutableStateFlow(1)
 
-    override val pageSize: MutableStateFlow<Int> = MutableStateFlow(4)
+    override val currentPage: MutableStateFlow<Int> = MutableStateFlow(0)
+    override val totalPage: MutableStateFlow<Int> = MutableStateFlow(1)
+    override val pageSize: MutableStateFlow<Int> = MutableStateFlow(20)
     override val searchList:MutableStateFlow<List<SearchBean?>> = MutableStateFlow(mutableListOf())
 
 
@@ -113,20 +117,38 @@ class AccountUseCaseImpl(
     }
     @IntentProcess
     @BusinessUseCase.AutoLoading
+    private suspend fun call(intent: AccountIntent.Call) {
+             ServiceManager.get(CommonInterface::class)?.call(intent.userName,object : CommonNothingCallback{
+                 override fun onSuccess() {
+                      Log.i("马超","拨打电话成功")
+                 }
+
+                 override fun onError(errorMessage: String) {
+                      Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
+                 }
+             })
+    }
+    @IntentProcess
+    @BusinessUseCase.AutoLoading
     private suspend fun search(intent: AccountIntent.Search) {
-         ServiceManager.get(CommonInterface::class)?.search(memberAccount.value.text,currentPage.value,pageSize.value,object :
+         if(currentPage.value>=totalPage.value){
+             return
+         }
+         ServiceManager.get(CommonInterface::class)?.search(memberAccount.value.text,currentPage.value+1,pageSize.value,object :
              CommonListCallback<SearchBean> {
              override fun onSuccess(
                  list: List<SearchBean>
              ) {
                  if(list.isNotEmpty()){
-                     searchList.value = list
+                     currentPage.value = list[0].current_page
+                     totalPage.value = list[0].total_pages
+                     searchList.value += list
                  }
              }
 
 
              override fun onError(errorMessage: String) {
-
+                  Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
              }
          })
     }

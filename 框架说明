@@ -100,7 +100,9 @@ fun AccountViewWrap() {
 class AccountAct : BaseBusinessAct<AccountViewModel>() {}
 使用ActivityStack.finish{it.hasFlag(flag = APP_ACTIVITY_FLAG_ACCOUNT)}
 
-
+19，   //LaunchedEffect第一次调用Compose函数时候调用，对应初始化时机
+           //SideEffect compose函数每次执行时都会调用该方法，对应组件重绘时机
+           //DisposableEffect内部有一个onDispose()函数，组件移除的时候调用
 
 
 

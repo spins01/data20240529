@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -169,8 +170,11 @@ private fun AccountView(
                     count = 2,
                     userScrollEnabled = false
                 ) { page ->
+
                     when (page) {
-                        0 -> MemberList(search, searchListOb)
+                        0 -> MemberList(search, searchListOb) {userName->
+                              vm.addIntent(AccountIntent.Call(context,userName))
+                        }
 //                        1 -> RowManage(vm)
                     }
                 }
@@ -212,14 +216,7 @@ private fun AccountViewPreview() {
 }
 
 @Composable
-private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>) {
-//    val scrollState = rememberScrollState()
-//    Row(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .horizontalScroll(scrollState)
-////            .horizontalScroll(state = localMemberListScrollState.current)
-//    ) {
+private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>,call: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -283,11 +280,16 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>) {
                 .nothing()
 
         ) {
+
             item {
                 SearchItemHeader()
             }
-            itemsIndexed(searchList) { _, item ->
-
+            itemsIndexed(searchList) { index, item ->
+                if(index == searchList.size-1){
+//                   LaunchedEffect(Unit) {
+                      search()
+//                   }
+                }
                 SearchItem(
                     jing = item?.id.toString(),
 //                    status = item?.status.toString(),
@@ -298,7 +300,8 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>) {
                     },
                     account = item?.name.toString(),
                     type = item?.dial_type.toString(),
-                    commissioner = item?.commissioner.toString()
+                    commissioner = item?.commissioner.toString(),
+                    call
                 )
             }
         }
@@ -355,113 +358,17 @@ private fun SearchItem(
     status: String,
     account: String,
     type: String,
-    commissioner: String
+    commissioner: String,
+    call:(String)->Unit
 ) {
     Column {
-//        Divider(
-//            color = colorResource(id = com.res.R.color.res_edf1f7),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(1.dp)
-//                .nothing()
-//        )
         Row(
             modifier = Modifier
                 .wrapContentWidth()
                 .height(50.dp)
-//                .run {
-//                    if (isLast) {
-//                        clip(
-//                            RoundedCornerShape(
-//                                topStart = CornerSize(0.dp),
-//                                topEnd = CornerSize(0.dp),
-//                                bottomEnd = CornerSize(10.dp),
-//                                bottomStart = CornerSize(10.dp)
-//                            )
-//                        ).drawBehind {
-//                            val strokeWidth = 1.dp.toPx()
-//                            val halfStrokeWidth = strokeWidth / 2
-//                            val cornerRadius = 16.dp.toPx()
-//
-//                            // Draw left line
-//                            drawLine(
-//                                color = Color.Red,
-//                                start = androidx.compose.ui.geometry.Offset(halfStrokeWidth, 0f),
-//                                end = androidx.compose.ui.geometry.Offset(
-//                                    halfStrokeWidth,
-//                                    size.height - cornerRadius
-//                                ),
-//                                strokeWidth = strokeWidth
-//                            )
-//
-//                            // Draw bottom line with rounded corners
-//                            drawRoundRect(
-//                                color = Color.Red,
-//                                topLeft = androidx.compose.ui.geometry.Offset(
-//                                    0f,
-//                                    size.height - cornerRadius * 2
-//                                ),
-//                                size = androidx.compose.ui.geometry.Size(
-//                                    size.width,
-//                                    cornerRadius * 2
-//                                ),
-//                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
-//                                    cornerRadius,
-//                                    cornerRadius
-//                                ),
-//                                style = Stroke(width = strokeWidth)
-//                            )
-//
-//                            // Draw right line
-//                            drawLine(
-//                                color = Color.Red,
-//                                start = androidx.compose.ui.geometry.Offset(
-//                                    size.width - halfStrokeWidth,
-//                                    0f
-//                                ),
-//                                end = androidx.compose.ui.geometry.Offset(
-//                                    size.width - halfStrokeWidth,
-//                                    size.height - cornerRadius
-//                                ),
-//                                strokeWidth = strokeWidth
-//                            )
-//                        }
-//                    } else {
-//                        drawBehind {
-//                            val strokeWidth = 1.dp.toPx()
-//                            val halfStrokeWidth = strokeWidth / 2
-//                            val width = size.width
-//                            val height = size.height
-//
-//                            // Draw right border
-//                            drawLine(
-//                                color = Color.Black,
-//                                start = Offset(width - halfStrokeWidth, 0f),
-//                                end = Offset(width - halfStrokeWidth, height),
-//                                strokeWidth = strokeWidth,
-//                                cap = StrokeCap.Square
-//                            )
-//
-//                            // Draw bottom border
-//                            drawLine(
-//                                color = Color.Black,
-//                                start = Offset(0f, height - halfStrokeWidth),
-//                                end = Offset(width, height - halfStrokeWidth),
-//                                strokeWidth = strokeWidth,
-//                                cap = StrokeCap.Square
-//                            )
-//
-//                            // Draw left border
-//                            drawLine(
-//                                color = Color.Black,
-//                                start = Offset(halfStrokeWidth, 0f),
-//                                end = Offset(halfStrokeWidth, height - halfStrokeWidth),
-//                                strokeWidth = strokeWidth,
-//                                cap = StrokeCap.Square
-//                            )
-//                        }
-//                    }
-//                }
+                .clickableNoRipple {
+                    call(account)
+                }
                 .nothing()
         ) {
             TextItem(text = jing, 36.dp)
@@ -471,53 +378,6 @@ private fun SearchItem(
             TextItem(text = commissioner, 125.dp)
         }
     }
-//    if (isLast) {
-//        Column {
-//            Divider(
-//                color = colorResource(id = com.res.R.color.res_edf1f7),
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(1.dp)
-//            )
-//            Row(
-//                modifier = Modifier
-//                    .wrapContentWidth()
-//                    .height(50.dp)
-//                    .nothing()
-//            ) {
-//                TextItem(text = jing, 36.dp)
-//                TextItem(text = status, 59.dp)
-//                TextItem(text = account, 97.dp)
-//                TextItem(text = type, 123.dp)
-//                TextItem(text = commissioner, 125.dp)
-//            }
-//        }
-//    }else{
-//        Column {
-//            Divider(
-//                color = colorResource(id = com.res.R.color.res_edf1f7),
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(1.dp)
-//            )
-//            Row(
-//                modifier = Modifier
-//                    .wrapContentWidth()
-//                    .height(50.dp)
-//                    .border(border = BorderStroke(width = 1.dp))
-//                    .background(
-//                        color = colorResource(id = com.res.R.color.res_edf1f7),
-//                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-//                    )
-//                    .nothing()
-//            ) {
-//                TextItem(text = jing, 36.dp)
-//                TextItem(text = status, 59.dp)
-//                TextItem(text = account, 97.dp)
-//                TextItem(text = type, 123.dp)
-//                TextItem(text = commissioner, 125.dp)
-//            }
-//        }
 }
 
 @Composable
