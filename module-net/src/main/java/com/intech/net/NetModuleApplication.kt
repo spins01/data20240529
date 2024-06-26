@@ -31,17 +31,19 @@ class NetModuleApplication: IApplicationLifecycle {
     }
     private fun initRxHttp() {
       val sslParams = HttpsUtils.getSslSocketFactory()
-        val client: OkHttpClient = OkHttpClient.Builder()
-            .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //添加信任证书
-            .hostnameVerifier(HostnameVerifier { _: String?, _: SSLSession? -> true }) //忽略host验证
-            .build()
-        RxHttpPlugins.init(client) //自定义OkHttpClient对象
+//        val client: OkHttpClient = OkHttpClient.Builder()
+//            .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //添加信任证书
+//            .hostnameVerifier(HostnameVerifier { _: String?, _: SSLSession? -> true }) //忽略host验证
+//            .build()
+        RxHttpPlugins.init(null) //自定义OkHttpClient对象
             .setDebug(BuildConfig.DEBUG, false, 2) //调试模式/分段打印/json数据格式化输出
             .setOnParamAssembly { p: Param<*>? ->
+                Log.i("马超","我的token0:${SharedPreferenceUtil.getString(SPINS_TOKEN)}")
                 if(SharedPreferenceUtil.getString(SPINS_TOKEN)!=null&& SharedPreferenceUtil.getString(
                         SPINS_TOKEN
                     )!!.isNotEmpty()
                 ){
+                    Log.i("马超","我的token1:${SharedPreferenceUtil.getString(SPINS_TOKEN)}")
                     p?.addHeader(Authorization,"Token ${SharedPreferenceUtil.getString(SPINS_TOKEN)}")
                 }
             }

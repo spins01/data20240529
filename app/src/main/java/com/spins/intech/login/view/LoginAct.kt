@@ -1,16 +1,21 @@
 package com.spins.intech.login.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.view.WindowCompat
+import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SharedPreferenceUtil
+import com.app.module.base.support.AppRouterApi
 import com.app.module.base.theme.AppTheme
 import com.app.module.base.support.AppRouterConfig
 import com.app.module.base.support.LOGIN_ACTIVITY
 import com.app.module.base.view.BaseBusinessAct
 import com.xiaojinzi.component.anno.RouterAnno
+import com.xiaojinzi.component.impl.Router
 import com.xiaojinzi.support.annotation.ViewLayer
 import com.xiaojinzi.support.compose.StateBar
 import com.xiaojinzi.support.init.BootView
@@ -37,7 +42,12 @@ class LoginAct : BaseBusinessAct<LoginViewModel>() {
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if(SharedPreferenceUtil.getString(SPINS_TOKEN)!=null&& SharedPreferenceUtil.getString(
+                SPINS_TOKEN
+            )!!.isNotEmpty()
+        ) {
+            Router.withApi(apiClass = AppRouterApi::class).toAccountView(this)
+        }
         window.translateStatusBar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -51,7 +61,13 @@ class LoginAct : BaseBusinessAct<LoginViewModel>() {
                 }
             }
         }
-
+//        if(SharedPreferenceUtil.getString(SPINS_TOKEN)!=null&& SharedPreferenceUtil.getString(
+//                SPINS_TOKEN
+//            )!!.isNotEmpty()
+//        ) {
+//
+//            Router.withApi(apiClass = AppRouterApi::class).toAccountView(this)
+//        }
     }
 
 }
