@@ -11,6 +11,7 @@ import com.app.module.base.bean.UserInfoBean
 import com.app.module.base.common.CommonInterface
 import com.app.module.base.common.CommonObjCallback
 import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SPINS_USER
 import com.app.module.base.extension.SharedPreferenceUtil
 import com.app.module.base.support.AppRouterApi
 import com.xiaojinzi.component.impl.Router
@@ -99,6 +100,7 @@ class LoginUseCaseImpl(
                 object : CommonObjCallback<UserInfoBean> {
                     override fun onSuccess(t: UserInfoBean) {
                         SharedPreferenceUtil.putString(SPINS_TOKEN, t.token)
+                        SharedPreferenceUtil.putString(SPINS_USER, t.username)
                         Router.withApi(apiClass = AppRouterApi::class).toAccountView(intent.context)
                     }
 

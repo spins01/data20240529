@@ -13,6 +13,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -78,6 +79,8 @@ import com.app.module.base.common.localTelephone
 import com.app.module.base.common.localTelephoneChange
 import com.app.module.base.common.localTelephoneFocusChange
 import com.app.module.base.common.localTelephoneStatus
+import com.app.module.base.extension.SPINS_USER
+import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.spins.intech.account.domain.AccountIntent
@@ -320,7 +323,7 @@ private fun SearchItemHeader() {
         TextItem(text = stringResource(id = com.res.R.string.res_jing), 36.dp)
         TextItem(
             text = stringResource(id = com.res.R.string.res_operation),
-            width = 75.dp,
+            width = 85.dp,
         )
         TextItem(text = stringResource(id = com.res.R.string.res_status), 59.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_account_lower), 97.dp)
@@ -348,6 +351,7 @@ private fun TextItem(
 
            TextButton(
                onClick = { call(callAccount) },
+               contentPadding = PaddingValues(0.dp),
                modifier = Modifier
                    .padding(0.dp)
                    .background(
@@ -403,7 +407,7 @@ private fun SearchItem(
             TextItem(text = jing, 36.dp)
             TextItem(
                 text = stringResource(id = com.res.R.string.res_call),
-                width = 75.dp,
+                width = 85.dp,
                 isButton = true,
                 callAccount = account,
                 call = call
@@ -533,7 +537,7 @@ private fun DrawColumnContent(logout: () -> Unit) {
                     .nothing(),
             )
             Text(
-                "赵云",
+                "${SharedPreferenceUtil.getString(SPINS_USER)}",
                 style = TextStyle(
                     fontSize = 20.sp,
                     color = colorResource(id = com.res.R.color.res_090E15),

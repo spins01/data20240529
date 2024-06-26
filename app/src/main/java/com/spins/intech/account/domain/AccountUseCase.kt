@@ -16,6 +16,7 @@ import com.app.module.base.common.CommonListCallback
 import com.app.module.base.common.CommonNothingCallback
 import com.app.module.base.extension.APP_ACTIVITY_FLAG_ACCOUNT
 import com.app.module.base.extension.SPINS_TOKEN
+import com.app.module.base.extension.SPINS_USER
 import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.PagerState
 import com.xiaojinzi.component.impl.service.ServiceManager
@@ -213,6 +214,7 @@ class AccountUseCaseImpl(
             ?.logOut(object : CommonNothingCallback{
                 override fun onSuccess() {
                     SharedPreferenceUtil.deleteValueForKey(SPINS_TOKEN)
+                    SharedPreferenceUtil.deleteValueForKey(SPINS_USER)
                     ActivityStack.finish{it.hasFlag(flag = APP_ACTIVITY_FLAG_ACCOUNT)}
                 }
 
