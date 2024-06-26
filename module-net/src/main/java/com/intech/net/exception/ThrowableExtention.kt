@@ -4,7 +4,10 @@ import android.util.Log
 import rxhttp.wrapper.exception.HttpStatusCodeException
 import rxhttp.wrapper.exception.ParseException
 
-
+//{
+//    "code": 2015,
+//    "error": "Unbound Agent"
+//}
 val Throwable.spinsCode: Int
     get() =
         when (this) {
@@ -31,7 +34,11 @@ val Throwable.spinsMessage: String
             }
             2003 -> "User is not logged in"
             2010 -> "Permission denied"
-            //业务code异常
+            2015 -> "Unbound Agent"
+            2006 -> "Current password is incorrect"
+            2011 -> "Role must be 2 or 3"
+            2009 -> "User ID is required"
+            2023 -> "Missing parameters"
             else -> {
                 Log.i("赵云", "spinsMessage3:${this.spinsCode}")
                 "unknown error"

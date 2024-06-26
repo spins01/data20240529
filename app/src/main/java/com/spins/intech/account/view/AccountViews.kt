@@ -349,6 +349,7 @@ private fun TextItem(
            TextButton(
                onClick = { call(callAccount) },
                modifier = Modifier
+                   .padding(0.dp)
                    .background(
                        color = colorResource(id = com.res.R.color.res_0f64e3),
                        shape = RoundedCornerShape(5.dp)
