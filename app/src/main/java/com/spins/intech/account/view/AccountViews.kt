@@ -281,7 +281,7 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: 
                         search()
                     }
                     Column(modifier = Modifier.wrapContentWidth()) {
-                        Divider(color = colorResource(id = com.res.R.color.res_edf1f7), modifier = Modifier.width(515.dp).height(1.dp))
+                        Divider(color = colorResource(id = com.res.R.color.res_edf1f7), modifier = Modifier.width(525.dp).height(1.dp))
                         SearchItem(
                             jing = item?.id.toString(),
                             status = when (item?.status) {

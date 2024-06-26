@@ -27,6 +27,7 @@ import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
 import com.xiaojinzi.support.activity_stack.ActivityStack
 import com.xiaojinzi.support.annotation.ViewModelLayer
+import com.xiaojinzi.support.ktx.toStringItemDto
 import kotlinx.coroutines.flow.MutableStateFlow
 
 
@@ -125,7 +126,7 @@ class AccountUseCaseImpl(
                  }
 
                  override fun onError(errorMessage: String) {
-                      Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
+                     tip(errorMessage.toStringItemDto())
                  }
              })
     }
@@ -149,7 +150,7 @@ class AccountUseCaseImpl(
 
 
              override fun onError(errorMessage: String) {
-                  Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
+                 tip(errorMessage.toStringItemDto())
              }
          })
     }
@@ -219,7 +220,7 @@ class AccountUseCaseImpl(
                 }
 
                 override fun onError(errorMessage: String) {
-                     Toast.makeText(intent.context,errorMessage,Toast.LENGTH_LONG).show()
+                    tip(errorMessage.toStringItemDto())
                 }
             })
     }
