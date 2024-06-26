@@ -24,25 +24,17 @@ val Throwable.spinsCode: Int
 val Throwable.spinsMessage: String
     get() =
         when (this.spinsCode) {
-            2002 -> {
-                Log.i("赵云", "spinsMessage1:${this.spinsCode}")
-                "Incorrect username or password"
-            } //Http状态码异常
-            2022 -> {
-                Log.i("赵云", "spinsMessage2:${this.spinsCode}")
-                "Missing parameters"
-            }
+            2002 -> "Incorrect username or password"
             2003 -> "User is not logged in"
-            2010 -> "Permission denied"
-            2015 -> "Unbound Agent"
             2006 -> "Current password is incorrect"
-            2011 -> "Role must be 2 or 3"
             2009 -> "User ID is required"
+            2010 -> "Permission denied"
+            2011 -> "Role must be 2 or 3"
+            2015 -> "Unbound Agent"
+            2022 -> "Missing parameters"
             2023 -> "Missing parameters"
-            else -> {
-                Log.i("赵云", "spinsMessage3:${this.spinsCode}")
-                "unknown error"
-            }
+            else -> "unknown error"
+
         }
 
 

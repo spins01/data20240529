@@ -359,7 +359,7 @@ private fun TextItem(
            ) {
                Text(
                    text = stringResource(id = com.res.R.string.res_call),
-                   style = TextStyle(color = Color.White, fontSize = 14.sp)
+                   style = TextStyle(color = Color.White, fontSize = 14.sp),
                )
            }
            Spacer(modifier = Modifier

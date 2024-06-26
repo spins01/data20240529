@@ -8,7 +8,8 @@ data class BaseResponse<T>(
     val links:Links?,
     val count:Int? ,
     val total_pages:Int?,
-    val current_page:Int?
+    val current_page:Int?,
+    val error:String
 )
 
 data class UserInfoBean(

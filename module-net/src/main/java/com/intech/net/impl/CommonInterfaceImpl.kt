@@ -22,7 +22,7 @@ class CommonInterfaceImpl : CommonInterface {
             .addAll(params)
             .toFlowResponse<UserInfoBean>()
             .catch {
-                callback.onError(it.spinsMessage)
+                callback.onError(it.message.toString())
             }
             .collect {
                  callback.onSuccess(it)
@@ -32,7 +32,9 @@ class CommonInterfaceImpl : CommonInterface {
     override suspend fun logOut(callback: CommonNothingCallback) {
          RxHttp.postJson(com.intech.net.constant.logOut)
              .toFlowResponse<String>()
-             .catch { callback.onError(it.spinsMessage) }
+             .catch {
+                 callback.onError(it.message.toString())
+             }
              .collect{
                  callback.onSuccess()
              }
@@ -44,7 +46,7 @@ class CommonInterfaceImpl : CommonInterface {
              .addAll(params)
              .toFlowResponse<List<SearchBean>>()
              .catch {
-                 callback.onError(it.spinsMessage)
+                 callback.onError(it.message.toString())
              }
              .collect{
                  callback.onSuccess(it)
@@ -56,7 +58,7 @@ class CommonInterfaceImpl : CommonInterface {
         RxHttp.postJson(com.intech.net.constant.call)
             .addAll(params)
             .toFlowResponse<String>()
-            .catch { callback.onError(it.spinsMessage) }
+            .catch { callback.onError(it.message.toString()) }
             .collect{
                 callback.onSuccess()
             }

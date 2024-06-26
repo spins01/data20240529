@@ -18,7 +18,7 @@ open class ResponseParser<T> : TypeParser<T> {
         val data: BaseResponse<T> = response.convertTo(BaseResponse::class, *types)
         var t = data.data
         if (data.code != 0) {
-            throw ParseException(data.code.toString(), data.message, response)
+            throw ParseException(data.code.toString(), data.error, response)
         }
         if (t == null) {
             t = data.message as T
