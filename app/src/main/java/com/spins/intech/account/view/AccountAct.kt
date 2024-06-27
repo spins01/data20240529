@@ -1,5 +1,6 @@
 package com.spins.intech.account.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -57,4 +58,8 @@ class AccountAct : BaseBusinessAct<AccountViewModel>() {
 
     }
 
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+
+    }
 }
