@@ -305,7 +305,6 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: 
                 .navigationBarsPadding()
         )
     }
-//    }
 
 }
 
@@ -320,7 +319,7 @@ private fun SearchItemHeader() {
                 shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
             )
     ) {
-        TextItem(text = stringResource(id = com.res.R.string.res_jing), 36.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_jing), 56.dp)
         TextItem(
             text = stringResource(id = com.res.R.string.res_operation),
             width = 85.dp,
@@ -404,7 +403,7 @@ private fun SearchItem(
                 .height(50.dp)
                 .nothing()
         ) {
-            TextItem(text = jing, 36.dp)
+            TextItem(text = jing, 56.dp)
             TextItem(
                 text = stringResource(id = com.res.R.string.res_call),
                 width = 85.dp,
