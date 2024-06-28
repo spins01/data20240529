@@ -9,3 +9,6 @@ enum class InputType{
 enum class ButtonType{
    MemberAccount,Manager
 }
+enum class ShowType{
+   StartTime,EndTime
+}

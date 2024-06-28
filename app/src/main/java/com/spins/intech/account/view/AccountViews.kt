@@ -1,6 +1,8 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,16 +60,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.glance.color.DynamicThemeColorProviders.background
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.bean.SearchBean
+import com.app.module.base.bean.ShowType
 import com.app.module.base.common.DrawGradientLine
 import com.app.module.base.common.GradientSearchCreateButton
+import com.app.module.base.common.SpinsDatePickerDialog
 import com.app.module.base.common.SpinsInput
+import com.app.module.base.common.SpinsShow
 import com.app.module.base.common.clickableNoRipple
 import com.app.module.base.common.localDrawerState
+import com.app.module.base.common.localEndTime
+import com.app.module.base.common.localEndTimeClicked
 import com.app.module.base.common.localMemberAccount
 import com.app.module.base.common.localMemberAccountChange
 import com.app.module.base.common.localMemberAccountFocusChange
@@ -75,6 +82,8 @@ import com.app.module.base.common.localMemberAccountStatus
 import com.app.module.base.common.localMemberListScrollState
 import com.app.module.base.common.localPagerState
 import com.app.module.base.common.localRoleManagerScrollState
+import com.app.module.base.common.localStartTime
+import com.app.module.base.common.localStartTimeClicked
 import com.app.module.base.common.localTelephone
 import com.app.module.base.common.localTelephoneChange
 import com.app.module.base.common.localTelephoneFocusChange
@@ -88,6 +97,8 @@ import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Locale
 
 @InternalCoroutinesApi
 @ExperimentalMaterial3Api
@@ -98,6 +109,7 @@ private fun AccountView(
     needInit: Boolean? = null,
 ) {
     val context = LocalContext.current
+
     BusinessContentView<AccountViewModel>(
         needInit = needInit,
     ) { vm ->
@@ -132,10 +144,27 @@ private fun AccountView(
         val logout: () -> Unit = {
             vm.addIntent(AccountIntent.Logout(context))
         }
-        val search: () -> Unit = {
-            vm.addIntent(AccountIntent.Search(context, vm.currentPage.value, vm.pageSize.value))
+        val search: (Boolean) -> Unit = { isSearchMore ->
+            vm.addIntent(
+                AccountIntent.Search(
+                    context,
+                    isSearchMore
+                )
+            )
         }
         val searchListOb by vm.searchList.collectAsState(initial = mutableListOf())
+
+        val onStarTimeFocusChanged: () -> Unit = {
+            showTimePicker(context) {
+                vm.startTimeValue.value = it
+            }
+        }
+        val onEndTimeFocusChanged: () -> Unit = {
+            showTimePicker(context) {
+                vm.endTimeValue.value = it
+            }
+        }
+
         CompositionLocalProvider(
             localDrawerState provides drawerStateOb,
             localPagerState provides pagerStateOb,
@@ -143,12 +172,16 @@ private fun AccountView(
             localRoleManagerScrollState provides roleManagerScrollStateOb,
             localMemberAccountChange provides onMemberAccountChange,
             localTelephoneChange provides onTelephoneChange,
-            localMemberAccount provides vm.memberAccount.collectAsState(initial = TextFieldValue()),
+            localMemberAccount provides vm.memberAccount.collectAsStateWithLifecycle(),
             localTelephone provides vm.telephone.collectAsState(initial = TextFieldValue()),
             localMemberAccountStatus provides memberAccountStatusOb,
             localTelephoneStatus provides telephoneStatusOb,
             localMemberAccountFocusChange provides onMemberAccountFocusChanged,
-            localTelephoneFocusChange provides onTelephoneFocusChanged
+            localTelephoneFocusChange provides onTelephoneFocusChanged,
+            localStartTime provides vm.startTimeValue.collectAsStateWithLifecycle(),
+            localEndTime provides vm.endTimeValue.collectAsStateWithLifecycle(),
+            localStartTimeClicked provides onStarTimeFocusChanged,
+            localEndTimeClicked provides onEndTimeFocusChanged
         ) {
             ModalNavigationDrawer(
                 drawerContent = { DrawContent(logout) },
@@ -171,6 +204,17 @@ private fun AccountView(
             }
         }
     }
+}
+
+private fun showTimePicker(context: Context, onDateSelected: (String) -> Unit) {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    SpinsDatePickerDialog(context, { _, selectedYear, selectedMonth, selectedDay ->
+        val date = "$selectedYear-${selectedMonth + 1}-$selectedDay 00:00:00"
+        onDateSelected(date)
+    }, year, month, day).show()
 }
 
 @InternalCoroutinesApi
@@ -206,7 +250,11 @@ private fun AccountViewPreview() {
 }
 
 @Composable
-private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: (String) -> Unit) {
+private fun MemberList(
+    search: (Boolean) -> Unit,
+    searchList: List<SearchBean?>,
+    call: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -219,6 +267,33 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: 
         OpenDrawerIcon()
         Spacer(modifier = Modifier.height(31.dp))
         Text(
+            text = stringResource(id = com.res.R.string.res_start_time),
+            style = TextStyle(
+                fontSize = 14.sp, color = colorResource(
+                    id = com.res.R.color.res_667382
+                )
+            ),
+            modifier = Modifier.padding(start = 14.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        SpinsShow(showType = ShowType.StartTime)
+
+
+        Text(
+            text = stringResource(id = com.res.R.string.res_end_time),
+            style = TextStyle(
+                fontSize = 14.sp, color = colorResource(
+                    id = com.res.R.color.res_667382
+                )
+            ),
+            modifier = Modifier.padding(start = 14.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        SpinsShow(showType = ShowType.EndTime)
+
+        Text(
             text = stringResource(id = com.res.R.string.res_member_account),
             modifier = Modifier.padding(start = 14.dp),
             style = TextStyle(
@@ -230,26 +305,13 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: 
         Spacer(modifier = Modifier.height(9.dp))
 
         SpinsInput(inputType = InputType.MemberAccount)
-        /**
-        Spacer(modifier = Modifier.height(15.dp))
-        Text(
-        text = stringResource(id = com.res.R.string.res_telephone),
-        modifier = Modifier.padding(start = 14.dp),
-        style = TextStyle(
-        fontSize = 14.sp, color = colorResource(
-        id = com.res.R.color.res_667382
-        )
-        )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        SpinsInput(inputType = InputType.Telephone)
-         */
+
         Spacer(modifier = Modifier.height(11.dp))
         GradientSearchCreateButton(ButtonType.MemberAccount,
             stringResource(id = com.res.R.string.res_search),
             stringResource(id = com.res.R.string.res_bulk_import),
-            {
-                search()
+            { isSearchMore ->
+                search(isSearchMore)
             },
             {
                 Log.i("马超", "批量导入")
@@ -278,10 +340,15 @@ private fun MemberList(search: () -> Unit, searchList: List<SearchBean?>, call: 
                 }
                 itemsIndexed(searchList) { index, item ->
                     if (index == searchList.size - 1) {
-                        search()
+                        search(true)
                     }
                     Column(modifier = Modifier.wrapContentWidth()) {
-                        Divider(color = colorResource(id = com.res.R.color.res_edf1f7), modifier = Modifier.width(525.dp).height(1.dp))
+                        Divider(
+                            color = colorResource(id = com.res.R.color.res_edf1f7),
+                            modifier = Modifier
+                                .width(525.dp)
+                                .height(1.dp)
+                        )
                         SearchItem(
                             jing = item?.id.toString(),
                             status = when (item?.status) {
@@ -341,35 +408,37 @@ private fun TextItem(
     callAccount: String = ""
 ) {
     if (isButton) {
-       Column (modifier = Modifier.width(width)){
-           Spacer(modifier = Modifier
-               .height(10.dp)
-               .width(20.dp)
-               .nothing()
-               )
+        Column(modifier = Modifier.width(width)) {
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+                    .width(20.dp)
+                    .nothing()
+            )
 
-           TextButton(
-               onClick = { call(callAccount) },
-               contentPadding = PaddingValues(0.dp),
-               modifier = Modifier
-                   .padding(0.dp)
-                   .background(
-                       color = colorResource(id = com.res.R.color.res_0f64e3),
-                       shape = RoundedCornerShape(5.dp)
-                   )
-                   .height(30.dp)
-                   .fillMaxSize()
-           ) {
-               Text(
-                   text = stringResource(id = com.res.R.string.res_call),
-                   style = TextStyle(color = Color.White, fontSize = 14.sp),
-               )
-           }
-           Spacer(modifier = Modifier
-               .height(10.dp)
-               .width(20.dp)
-               )
-       }
+            TextButton(
+                onClick = { call(callAccount) },
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(
+                        color = colorResource(id = com.res.R.color.res_0f64e3),
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .height(30.dp)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = stringResource(id = com.res.R.string.res_call),
+                    style = TextStyle(color = Color.White, fontSize = 14.sp),
+                )
+            }
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+                    .width(20.dp)
+            )
+        }
     } else {
         Box(
             modifier = Modifier
@@ -397,25 +466,25 @@ private fun SearchItem(
     call: (String) -> Unit
 ) {
 
-        Row(
-            modifier = Modifier
-                .wrapContentWidth()
-                .height(50.dp)
-                .nothing()
-        ) {
-            TextItem(text = jing, 56.dp)
-            TextItem(
-                text = stringResource(id = com.res.R.string.res_call),
-                width = 85.dp,
-                isButton = true,
-                callAccount = account,
-                call = call
-            )
-            TextItem(text = status, 59.dp)
-            TextItem(text = account, 97.dp)
-            TextItem(text = type, 123.dp)
-            TextItem(text = commissioner, 125.dp)
-        }
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .height(50.dp)
+            .nothing()
+    ) {
+        TextItem(text = jing, 56.dp)
+        TextItem(
+            text = stringResource(id = com.res.R.string.res_call),
+            width = 85.dp,
+            isButton = true,
+            callAccount = account,
+            call = call
+        )
+        TextItem(text = status, 59.dp)
+        TextItem(text = account, 97.dp)
+        TextItem(text = type, 123.dp)
+        TextItem(text = commissioner, 125.dp)
+    }
 
 }
 

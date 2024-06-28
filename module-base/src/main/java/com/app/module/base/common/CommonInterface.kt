@@ -11,7 +11,7 @@ interface CommonInterface {
 
     suspend fun logOut(callback: CommonNothingCallback)
 
-    suspend fun search(userName:String,currentPage:Int?,pageSize:Int,callback: CommonListCallback<SearchBean>)
+    suspend fun search(userName:String,currentPage:Int?,pageSize:Int,startTime:String,endTime:String,callback: CommonListCallback<SearchBean>)
     suspend fun call(userName:String,callback: CommonNothingCallback)
 
 }

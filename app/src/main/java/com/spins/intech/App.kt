@@ -19,6 +19,7 @@ import com.xiaojinzi.support.ktx.LogSupport
 import com.xiaojinzi.support.ktx.orNull
 import com.xiaojinzi.support.ktx.toStringItemDto
 import com.xiaojinzi.tally.lib.res.model.exception.CommonBusinessException
+import java.util.Locale
 
 
 class App : Application() {
@@ -44,7 +45,8 @@ class App : Application() {
             )
             return
         }
-
+        //设置英文环境
+        setEnglishConfig()
         // 阻止系统恢复
         CheckInit.init(
             app = this,
@@ -102,6 +104,13 @@ class App : Application() {
         val rootDir = MMKV.initialize(this)
     }
 
+    private fun setEnglishConfig() {
+        val locale = Locale("en","US")
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
+    }
 
 
     override fun onConfigurationChanged(newConfig: Configuration) {

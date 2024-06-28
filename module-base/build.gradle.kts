@@ -36,5 +36,7 @@ dependencies {
 
     api("com.google.accompanist:accompanist-insets:0.24.3-alpha")
 
+    api("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
+
 
 }

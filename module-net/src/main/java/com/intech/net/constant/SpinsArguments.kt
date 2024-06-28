@@ -3,6 +3,8 @@ package com.intech.net.constant
 //登录接口参数
 const val spinsUsername = "username"
 const val spinsPassword = "password"
+const val start_date = "password"
+const val end_date = "password"
 const val spinsPage = "page"
 const val spinsPageSize = "page_size"
 const val spinsRole = "role"

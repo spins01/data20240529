@@ -34,6 +34,8 @@
     <string name="res_role_permission" translatable="false">Role Permission</string>
     <string name="res_log_out" translatable="false">log out</string>
     <string name="res_member_account" translatable="false">Member Account</string>
+    <string name="res_start_time" translatable="false">Start Time</string>
+    <string name="res_end_time" translatable="false">End Time</string>
     <string name="res_telephone" translatable="false">Telephone</string>
     <string name="res_create_time" translatable="false">Create Time</string>
     <string name="res_manage" translatable="false">Manage</string>

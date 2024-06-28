@@ -85,3 +85,9 @@ val localMemberAccountStatus = compositionLocalOf<LoginInputStatus> { LoginInput
 val localTelephoneStatus = compositionLocalOf<LoginInputStatus> { LoginInputStatus.NORMAL }
 val localMemberAccountFocusChange = compositionLocalOf<(FocusState) ->Unit> { {} }
 val localTelephoneFocusChange = compositionLocalOf<(FocusState) ->Unit> { {} }
+
+val localStartTime =  compositionLocalOf<State<String>> { mutableStateOf("")}
+val localEndTime =  compositionLocalOf<State<String>> { mutableStateOf("")}
+val localStartTimeClicked =  compositionLocalOf<() ->Unit> {{}}
+val localEndTimeClicked =  compositionLocalOf<() ->Unit> { {}}
+

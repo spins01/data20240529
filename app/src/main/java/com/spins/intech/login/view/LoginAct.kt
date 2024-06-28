@@ -7,6 +7,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.view.WindowCompat
+import com.app.module.base.extension.APP_ACTIVITY_FLAG_ACCOUNT
+import com.app.module.base.extension.APP_ACTIVITY_FLAG_LOGIN
 import com.app.module.base.extension.SPINS_TOKEN
 import com.app.module.base.extension.SharedPreferenceUtil
 import com.app.module.base.support.AppRouterApi
@@ -16,13 +18,16 @@ import com.app.module.base.support.LOGIN_ACTIVITY
 import com.app.module.base.view.BaseBusinessAct
 import com.xiaojinzi.component.anno.RouterAnno
 import com.xiaojinzi.component.impl.Router
+import com.xiaojinzi.support.activity_stack.ActivityFlag
 import com.xiaojinzi.support.annotation.ViewLayer
 import com.xiaojinzi.support.compose.StateBar
 import com.xiaojinzi.support.init.BootView
 import com.xiaojinzi.support.ktx.initOnceUseViewModel
 import com.xiaojinzi.support.ktx.translateStatusBar
 import kotlinx.coroutines.InternalCoroutinesApi
-
+@ActivityFlag(
+    APP_ACTIVITY_FLAG_LOGIN,
+)
 @RouterAnno(
     hostAndPath = LOGIN_ACTIVITY,
 )

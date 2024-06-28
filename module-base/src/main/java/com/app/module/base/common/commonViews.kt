@@ -3,6 +3,7 @@ package com.app.module.base.common
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,14 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.input.key.Key.Companion.W
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -36,13 +35,13 @@ import androidx.compose.ui.unit.sp
 import com.app.module.base.bean.ButtonType
 import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
+import com.app.module.base.bean.ShowType
 import com.xiaojinzi.support.ktx.nothing
 
 @Composable
 fun DrawGradientLine(colors: List<Color>) {
     val gradient = Brush.horizontalGradient(
-        colors = colors,
-        tileMode = TileMode.Clamp
+        colors = colors, tileMode = TileMode.Clamp
     )
     androidx.compose.foundation.Canvas(
         modifier = Modifier
@@ -50,10 +49,7 @@ fun DrawGradientLine(colors: List<Color>) {
             .width(4.dp)
     ) {
         drawLine(
-            gradient,
-            Offset(size.width / 2, 0f),
-            Offset(size.width / 2, size.height),
-            4.dp.toPx()
+            gradient, Offset(size.width / 2, 0f), Offset(size.width / 2, size.height), 4.dp.toPx()
         )
     }
 }
@@ -63,13 +59,13 @@ fun GradientSearchCreateButton(
     buttonType: ButtonType,
     leftName: String,
     rightName: String,
-    onClickLeft: () -> Unit,
+    onClickLeft: (Boolean) -> Unit,
     onClickRight: () -> Unit
 ) {
     Row() {
         Spacer(modifier = Modifier.width(14.dp))
         Button(
-            onClick = onClickLeft,
+            onClick = { onClickLeft(false) },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             contentPadding = PaddingValues(all = 0.dp),
             modifier = Modifier
@@ -79,8 +75,7 @@ fun GradientSearchCreateButton(
                             colorResource(id = com.res.R.color.res_167AFF),
                             colorResource(id = com.res.R.color.res_2eafff)
                         )
-                    ),
-                    shape = RoundedCornerShape(999.dp)
+                    ), shape = RoundedCornerShape(999.dp)
                 )
                 .height(46.dp)
                 .width(78.dp)
@@ -124,8 +119,7 @@ fun GradientSearchCreateButton(
                                     colorResource(id = com.res.R.color.res_167AFF),
                                     colorResource(id = com.res.R.color.res_2eafff)
                                 )
-                            ),
-                            shape = RoundedCornerShape(999.dp)
+                            ), shape = RoundedCornerShape(999.dp)
                         )
                         .height(46.dp)
                         .width(78.dp)
@@ -163,8 +157,7 @@ fun GradientLoginButton(isEnabled: Boolean, name: String, onClick: () -> Unit) {
             contentPadding = PaddingValues(all = 0.dp),
             modifier = Modifier
                 .background(
-                    brush = mBrush,
-                    shape = RoundedCornerShape(999.dp)
+                    brush = mBrush, shape = RoundedCornerShape(999.dp)
                 )
                 .height(46.dp)
                 .weight(1f)
@@ -183,13 +176,49 @@ fun InputErrorTips(inputType: InputType) {
         else -> ""
     }
     Text(
-        text = tips,
-        modifier = Modifier.padding(start = 12.dp),
-        style = TextStyle(
-            fontSize = 12.sp,
-            color = colorResource(id = com.res.R.color.res_f7391f)
+        text = tips, modifier = Modifier.padding(start = 12.dp), style = TextStyle(
+            fontSize = 12.sp, color = colorResource(id = com.res.R.color.res_f7391f)
         )
     )
+}
+
+@Composable
+fun SpinsShow(showType: ShowType) {
+    val onStartTimeClicked = localStartTimeClicked.current
+    val onEndTimeClicked = localEndTimeClicked.current
+    val content = when (showType) {
+        ShowType.StartTime -> localStartTime.current
+        ShowType.EndTime -> localEndTime.current
+    }
+    Row {
+        Spacer(modifier = Modifier.width(14.dp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+            .border(
+                1.dp, colorResource(id = com.res.R.color.res_d8e3ed), RoundedCornerShape(6.dp)
+            )
+            .width(168.dp)
+            .height(42.dp)
+            .clickableNoRipple {
+                when (showType) {
+                    ShowType.StartTime -> onStartTimeClicked()
+                    ShowType.EndTime -> onEndTimeClicked()
+                }
+            }
+            .background(Color.White, RoundedCornerShape(6.dp))
+            .nothing()) {
+            Text(
+                text = content.value,
+                style = TextStyle.Default.copy(
+                    fontSize = 14.sp,
+                    color = colorResource(id = com.res.R.color.res_090E15),
+                )
+            )
+        }
+
+
+    }
 }
 
 @Composable
@@ -203,20 +232,22 @@ fun SpinsInput(inputType: InputType) {
         InputType.Password -> localPassword.current.value
         InputType.MemberAccount -> localMemberAccount.current.value
         InputType.Telephone -> localTelephone.current.value
+
     }
     val leftSpace = when (inputType) {
         InputType.Account, InputType.Password -> 12.dp
         InputType.MemberAccount, InputType.Telephone -> 14.dp
+
     }
     val rightSpace = when (inputType) {
         InputType.Account, InputType.Password -> 12.dp
         InputType.MemberAccount, InputType.Telephone -> 118.dp
+
     }
     Row {
         Spacer(modifier = Modifier.width(leftSpace))
         BasicTextField(
-            value = inputValue,
-            onValueChange = { newValue ->
+            value = inputValue, onValueChange = { newValue ->
                 when (inputType) {
                     InputType.Account -> onAccountValueChange(newValue)
                     InputType.Password -> onPasswordValueChange(newValue)
@@ -224,22 +255,18 @@ fun SpinsInput(inputType: InputType) {
                     InputType.Telephone -> onTelephoneValueChange(newValue)
                 }
 
-            },
-            textStyle = TextStyle.Default.copy(
+            }, textStyle = TextStyle.Default.copy(
                 fontSize = 14.sp,
                 color = colorResource(id = com.res.R.color.res_090E15),
                 textAlign = TextAlign.Start
-            ),
-            singleLine = true,
-            decorationBox = { innerTextField ->
+            ), singleLine = true, decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     innerTextField()
                 }
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .weight(1f)
                 .loginInput(inputType)
         )
@@ -280,8 +307,7 @@ fun ManageInput(
     }
     Row() {
         Spacer(modifier = Modifier.width(14.dp))
-        BasicTextField(
-            value = leftValue,
+        BasicTextField(value = leftValue,
             onValueChange = { newValue ->
                 onValueChangeLeft(newValue)
             },
@@ -308,11 +334,9 @@ fun ManageInput(
                 .onFocusChanged { focusState ->
                     onFocusChangeLeft(focusState)
                 }
-                .nothing()
-        )
+                .nothing())
         Spacer(modifier = Modifier.width(14.dp))
-        BasicTextField(
-            value = rightValue,
+        BasicTextField(value = rightValue,
             onValueChange = { newValue ->
                 onValueChangeRight(newValue)
             },
@@ -339,7 +363,6 @@ fun ManageInput(
                 .onFocusChanged { focusState ->
                     onFocusChangeRight(focusState)
                 }
-                .nothing()
-        )
+                .nothing())
     }
 }
