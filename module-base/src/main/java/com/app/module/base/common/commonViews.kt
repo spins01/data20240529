@@ -62,7 +62,7 @@ fun GradientSearchCreateButton(
     onClickLeft: (Boolean) -> Unit,
     onClickRight: () -> Unit
 ) {
-    Row() {
+    Row {
         Spacer(modifier = Modifier.width(14.dp))
         Button(
             onClick = { onClickLeft(false) },

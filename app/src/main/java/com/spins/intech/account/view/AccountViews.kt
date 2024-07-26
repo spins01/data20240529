@@ -1,7 +1,6 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -55,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -66,6 +66,7 @@ import com.app.module.base.bean.InputType
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.bean.SearchBean
 import com.app.module.base.bean.ShowType
+import com.app.module.base.bean.UserInfoBean
 import com.app.module.base.common.DrawGradientLine
 import com.app.module.base.common.GradientSearchCreateButton
 import com.app.module.base.common.SpinsDatePickerDialog
@@ -92,13 +93,13 @@ import com.app.module.base.extension.SPINS_USER
 import com.app.module.base.extension.SharedPreferenceUtil
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import com.res.R
 import com.spins.intech.account.domain.AccountIntent
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.ktx.nothing
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Locale
 
 @InternalCoroutinesApi
 @ExperimentalMaterial3Api
@@ -317,55 +318,7 @@ private fun MemberList(
                 Log.i("马超", "批量导入")
             })
         Spacer(modifier = Modifier.height(21.dp))
-        Row {
-            Spacer(modifier = Modifier.width(15.dp))
-            LazyColumn(
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier
-                    .weight(1f)
-                    .border(
-                        width = 1.dp,
-                        color = colorResource(id = com.res.R.color.res_edf1f7),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .horizontalScroll(state = localMemberListScrollState.current)
-                    .clip(RoundedCornerShape(10.dp))
-                    .wrapContentWidth()
-                    .nothing()
-
-            ) {
-
-                item {
-                    SearchItemHeader()
-                }
-                itemsIndexed(searchList) { index, item ->
-                    if (index == searchList.size - 1) {
-                        search(true)
-                    }
-                    Column(modifier = Modifier.wrapContentWidth()) {
-                        Divider(
-                            color = colorResource(id = com.res.R.color.res_edf1f7),
-                            modifier = Modifier
-                                .width(525.dp)
-                                .height(1.dp)
-                        )
-                        SearchItem(
-                            jing = item?.id.toString(),
-                            status = when (item?.status) {
-                                1 -> stringResource(id = com.res.R.string.res_called)
-                                2 -> stringResource(id = com.res.R.string.res_not_called)
-                                else -> stringResource(id = com.res.R.string.res_failed)
-                            },
-                            account = item?.name.toString(),
-                            type = item?.dial_type.toString(),
-                            commissioner = item?.commissioner.toString(),
-                            call
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.width(15.dp))
-        }
+        ListCompose(searchList, search, call)
         Spacer(
             modifier = Modifier
                 .height(52.dp)
@@ -373,6 +326,60 @@ private fun MemberList(
         )
     }
 
+}
+
+@Composable
+private fun ListCompose(
+    searchList: List<SearchBean?>,
+    search: (Boolean) -> Unit,
+    call: (String) -> Unit
+) {
+    Row {
+        Spacer(modifier = Modifier.width(15.dp))
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .weight(1f)
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.res_edf1f7),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .horizontalScroll(state = localMemberListScrollState.current)
+                .clip(RoundedCornerShape(10.dp))
+                .wrapContentWidth()
+                .nothing()
+
+        ) {
+
+            item {
+                SearchItemHeader()
+            }
+            itemsIndexed(searchList) { index, item ->
+                if (index == searchList.size - 1) {
+                    search(true)
+                }
+                Column(modifier = Modifier.wrapContentWidth()) {
+                    Divider(
+                        color = colorResource(id = R.color.res_edf1f7),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                    )
+                    SearchItem(
+                        jing = item?.id.toString(),
+                        status = stringResource(id = SearchBean.getStringIdByStatus(item?.status)),
+                        account = item?.name.toString(),
+                        createTime = item?.create_time.toString(),
+                        type = item?.dial_type.toString(),
+                        commissioner = item?.commissioner.toString(),
+                        call
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.width(15.dp))
+    }
 }
 
 @Composable
@@ -393,9 +400,11 @@ private fun SearchItemHeader() {
         )
         TextItem(text = stringResource(id = com.res.R.string.res_status), 59.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_account_lower), 97.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_create_time), 123.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_type), 123.dp)
-        TextItem(text = stringResource(id = com.res.R.string.res_commissioner), 125.dp)
-
+        if (!UserInfoBean.isOnlyViewOwn) {
+            TextItem(text = stringResource(id = com.res.R.string.res_commissioner), 125.dp)
+        }
     }
 }
 
@@ -447,6 +456,7 @@ private fun TextItem(
         ) {
             Text(
                 text = text,
+                textAlign = TextAlign.Center,
                 style = TextStyle(
                     fontSize = 16.sp,
                     color = colorResource(id = com.res.R.color.res_333b43)
@@ -461,6 +471,7 @@ private fun SearchItem(
     jing: String,
     status: String,
     account: String,
+    createTime: String,
     type: String,
     commissioner: String,
     call: (String) -> Unit
@@ -482,8 +493,11 @@ private fun SearchItem(
         )
         TextItem(text = status, 59.dp)
         TextItem(text = account, 97.dp)
+        TextItem(text = createTime, 123.dp)
         TextItem(text = type, 123.dp)
-        TextItem(text = commissioner, 125.dp)
+        if (!UserInfoBean.isOnlyViewOwn) {
+            TextItem(text = commissioner, 125.dp)
+        }
     }
 
 }

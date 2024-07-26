@@ -1,7 +1,10 @@
 package com.spins.intech.account.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -12,6 +15,8 @@ import com.app.module.base.support.ACCOUNT_ACTIVITY
 import com.app.module.base.theme.AppTheme
 import com.app.module.base.support.AppRouterConfig
 import com.app.module.base.view.BaseBusinessAct
+import com.spins.intech.sipsample.service.PortSipService
+import com.spins.intech.sipsample.ui.MainActivity
 import com.xiaojinzi.component.anno.RouterAnno
 import com.xiaojinzi.support.activity_stack.ActivityFlag
 import com.xiaojinzi.support.annotation.ViewLayer
@@ -62,4 +67,38 @@ class AccountAct : BaseBusinessAct<AccountViewModel>() {
     override fun onBackPressed() {
 
     }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            2 -> {
+                var i = 0
+                for (result in grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "you must grant the permission " + permissions[i], Toast.LENGTH_SHORT).show()
+                        i++
+                        stopService(Intent(this, PortSipService::class.java))
+                        System.exit(0)
+                    }else{
+                        startActivity(Intent(this, MainActivity::class.java))
+                    }
+                }
+            }
+        }
+    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//    String permissions[], int[] grantResults) {
+//        switch (requestCode) {
+//            case REQ_DANGERS_PERMISSION:
+//            int i=0;
+//            for(int result:grantResults) {
+//            if (result != PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(this, "you must grant the permission "+permissions[i], Toast.LENGTH_SHORT).show();
+//                i++;
+//                stopService(new Intent(this, PortSipService.class));
+//                System.exit(0);
+//            }
+//        }
+//            break;
+//        }
+//    }
 }

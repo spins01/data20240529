@@ -2,6 +2,7 @@ package com.spins.intech.login.domain
 
 import android.content.Context
 import androidx.annotation.UiContext
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.text.input.TextFieldValue
 import com.app.module.base.bean.LoginInputStatus
 import com.app.module.base.bean.UserInfoBean
@@ -97,6 +98,7 @@ class LoginUseCaseImpl(
                     override fun onSuccess(t: UserInfoBean) {
                         SharedPreferenceUtil.putString(SPINS_TOKEN, t.token)
                         SharedPreferenceUtil.putString(SPINS_USER, t.username)
+                        UserInfoBean.checkSelf(t.role)
                         Router.withApi(apiClass = AppRouterApi::class).toAccountView(intent.context)
                     }
 
