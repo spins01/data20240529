@@ -267,57 +267,66 @@ private fun MemberList(
         )
         OpenDrawerIcon()
         Spacer(modifier = Modifier.height(31.dp))
-        Text(
-            text = stringResource(id = com.res.R.string.res_start_time),
-            style = TextStyle(
-                fontSize = 14.sp, color = colorResource(
-                    id = com.res.R.color.res_667382
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = com.res.R.string.res_start_time),
+                    style = TextStyle(
+                        fontSize = 14.sp, color = colorResource(
+                            id = com.res.R.color.res_667382
+                        )
+                    ),
+                    modifier = Modifier.padding(start = 14.dp)
                 )
-            ),
-            modifier = Modifier.padding(start = 14.dp)
-        )
+                Spacer(modifier = Modifier.height(8.dp))
+                SpinsShow(showType = ShowType.StartTime)
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        SpinsShow(showType = ShowType.StartTime)
-
-
-        Text(
-            text = stringResource(id = com.res.R.string.res_end_time),
-            style = TextStyle(
-                fontSize = 14.sp, color = colorResource(
-                    id = com.res.R.color.res_667382
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = com.res.R.string.res_end_time),
+                    style = TextStyle(
+                        fontSize = 14.sp, color = colorResource(
+                            id = com.res.R.color.res_667382
+                        )
+                    ),
+                    modifier = Modifier.padding(start = 14.dp)
                 )
-            ),
-            modifier = Modifier.padding(start = 14.dp)
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
-        SpinsShow(showType = ShowType.EndTime)
+                Spacer(modifier = Modifier.height(8.dp))
+                SpinsShow(showType = ShowType.EndTime)
+            }
+        }
 
-        Text(
-            text = stringResource(id = com.res.R.string.res_member_account),
-            modifier = Modifier.padding(start = 14.dp),
-            style = TextStyle(
-                fontSize = 14.sp, color = colorResource(
-                    id = com.res.R.color.res_667382
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = com.res.R.string.res_member_account),
+                    modifier = Modifier.padding(start = 14.dp),
+                    style = TextStyle(
+                        fontSize = 14.sp, color = colorResource(
+                            id = com.res.R.color.res_667382
+                        )
+                    )
                 )
-            )
-        )
-        Spacer(modifier = Modifier.height(9.dp))
+                Spacer(modifier = Modifier.height(9.dp))
 
-        SpinsInput(inputType = InputType.MemberAccount)
+                SpinsInput(inputType = InputType.MemberAccount)
+            }
+
+            GradientSearchCreateButton(ButtonType.MemberAccount,
+                stringResource(id = com.res.R.string.res_search),
+                stringResource(id = com.res.R.string.res_bulk_import),
+                { isSearchMore ->
+                    search(isSearchMore)
+                },
+                {
+                    Log.i("马超", "批量导入")
+                })
+        }
 
         Spacer(modifier = Modifier.height(11.dp))
-        GradientSearchCreateButton(ButtonType.MemberAccount,
-            stringResource(id = com.res.R.string.res_search),
-            stringResource(id = com.res.R.string.res_bulk_import),
-            { isSearchMore ->
-                search(isSearchMore)
-            },
-            {
-                Log.i("马超", "批量导入")
-            })
-        Spacer(modifier = Modifier.height(21.dp))
         ListCompose(searchList, search, call)
         Spacer(
             modifier = Modifier
@@ -393,18 +402,18 @@ private fun SearchItemHeader() {
                 shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
             )
     ) {
-        TextItem(text = stringResource(id = com.res.R.string.res_jing), 56.dp)
         TextItem(
             text = stringResource(id = com.res.R.string.res_operation),
             width = 85.dp,
         )
         TextItem(text = stringResource(id = com.res.R.string.res_status), 59.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_account_lower), 97.dp)
-        TextItem(text = stringResource(id = com.res.R.string.res_create_time), 123.dp)
         TextItem(text = stringResource(id = com.res.R.string.res_type), 123.dp)
+        TextItem(text = stringResource(id = com.res.R.string.res_create_time), 123.dp)
         if (!UserInfoBean.isOnlyViewOwn) {
             TextItem(text = stringResource(id = com.res.R.string.res_commissioner), 125.dp)
         }
+        TextItem(text = stringResource(id = com.res.R.string.res_jing), 56.dp)
     }
 }
 
@@ -483,7 +492,6 @@ private fun SearchItem(
             .height(50.dp)
             .nothing()
     ) {
-        TextItem(text = jing, 56.dp)
         TextItem(
             text = stringResource(id = com.res.R.string.res_call),
             width = 85.dp,
@@ -493,11 +501,12 @@ private fun SearchItem(
         )
         TextItem(text = status, 59.dp)
         TextItem(text = account, 97.dp)
-        TextItem(text = createTime, 123.dp)
         TextItem(text = type, 123.dp)
+        TextItem(text = createTime, 123.dp)
         if (!UserInfoBean.isOnlyViewOwn) {
             TextItem(text = commissioner, 125.dp)
         }
+        TextItem(text = jing, 56.dp)
     }
 
 }

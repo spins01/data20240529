@@ -241,7 +241,8 @@ fun SpinsInput(inputType: InputType) {
     }
     val rightSpace = when (inputType) {
         InputType.Account, InputType.Password -> 12.dp
-        InputType.MemberAccount, InputType.Telephone -> 118.dp
+        InputType.MemberAccount -> 12.dp
+        InputType.Telephone -> 118.dp
 
     }
     Row {
